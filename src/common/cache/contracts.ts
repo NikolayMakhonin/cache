@@ -1,4 +1,4 @@
-import {Func, IValueState, PromiseOrValue, ToPromise} from "@flemist/async-utils";
+import {Func, IValueState, PromiseOrValue, ToPromise} from '@flemist/async-utils'
 
 export type GetKeyFunc<This, Args extends any[], Key> = Func<This, Args, PromiseOrValue<Key>>
 export type CacheItem<Value, Options> = {

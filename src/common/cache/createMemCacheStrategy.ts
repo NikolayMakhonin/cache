@@ -2,7 +2,7 @@ import type { IValueState } from '@flemist/async-utils'
 import { delay, isPromiseLike } from '@flemist/async-utils'
 import type { ITimeController } from '@flemist/time-controller'
 import { timeControllerDefault } from '@flemist/time-controller'
-import {CacheItemAsync, CacheStrategy, Lock} from "src/common/cache/contracts";
+import {CacheItemAsync, CacheStrategy, Lock} from 'src/common/cache/contracts'
 
 export type MemCacheOptions = {
   lifeTime: number,
