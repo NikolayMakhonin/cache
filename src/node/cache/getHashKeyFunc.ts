@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import {getJsonKeyFunc} from './getJsonKeyFunc'
+import {getJsonKeyFunc} from '../../common/cache/getJsonKeyFunc'
 
 export function getHashKeyFunc(algorithm: string = 'sha256') {
   const getJsonKey = getJsonKeyFunc()

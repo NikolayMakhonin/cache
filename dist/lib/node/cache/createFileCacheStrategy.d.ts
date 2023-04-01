@@ -1,6 +1,7 @@
-import type { BufferConverter, CacheStrategy, PromiseOrValue } from './contracts';
-import type { IValueState } from '@flemist/async-utils';
+import type { BufferConverter } from './contracts';
+import type { IValueState, PromiseOrValue } from '@flemist/async-utils';
 import { FileStat, IFileController } from './FileController';
+import { CacheStrategy } from "../../common/cache/contracts";
 export declare type FileCacheOptions<Result = any, This = any, Args extends any[] = any[]> = {
     dir: string;
     converter: BufferConverter<Result>;

@@ -5,7 +5,7 @@ import { toCached } from 'src/common/cache/toCached'
 import { awaitTime } from '@flemist/test-utils'
 import {createFileCacheStrategy} from './createFileCacheStrategy'
 import {createBufferConverterJson} from './bufferConverters'
-import {getHashKeyFunc} from 'src/common/cache/getHashKeyFunc'
+import {getHashKeyFunc} from 'src/node/cache/getHashKeyFunc'
 import {FileControllerMock} from './FileController'
 
 describe('toCached', function () {
