@@ -1,7 +1,7 @@
 {
   "name": "@flemist/cache",
   "version": "0.0.0",
-  "description": "Flexible file and mem caches",
+  "description": "Flexible file and memory caches",
   "main": "dist/lib/node/index.cjs",
   "module": "dist/lib/node/index.mjs",
   "types": "dist/lib/node/index.d.ts",
