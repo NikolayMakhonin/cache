@@ -7,13 +7,13 @@ specifiers:
   '@babel/plugin-transform-runtime': 7.21.4
   '@babel/preset-env': 7.21.4
   '@babel/runtime-corejs3': 7.21.0
-  '@flemist/async-utils': ^0.0.19
+  '@flemist/async-utils': ^0.0.20
   '@flemist/copy-glob-flat': 0.0.5
   '@flemist/karma-custom-launcher': 0.0.0
   '@flemist/test-utils': 0.1.4
   '@flemist/test-variants': 0.0.16
   '@flemist/time-controller': ^0.0.1
-  '@flemist/time-limits': ^0.0.9
+  '@flemist/time-limits': ^0.0.10
   '@rollup/plugin-alias': 4.0.3
   '@rollup/plugin-babel': 6.0.3
   '@rollup/plugin-commonjs': '=21.1.0'
@@ -54,9 +54,9 @@ specifiers:
   typescript: '=4.7.4'
 
 dependencies:
-  '@flemist/async-utils': 0.0.19
+  '@flemist/async-utils': 0.0.20
   '@flemist/time-controller': 0.0.1
-  '@flemist/time-limits': 0.0.9
+  '@flemist/time-limits': 0.0.10
   tslib: 2.5.0
 
 devDependencies:
@@ -1353,17 +1353,8 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@flemist/async-utils/0.0.16:
-    resolution: {integrity: sha512-3oqWfZz2BBEUJNmKgxK8y0LN5UEBqkqEXXfvdQADF1X2L8HFGBLTHnm0VTHtHH230O7bA9buyiEAWywKGf2tQQ==}
-    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
-    dependencies:
-      '@flemist/abort-controller-fast': 0.0.5
-      '@flemist/time-controller': 0.0.1
-      tslib: 2.5.0
-    dev: false
-
-  /@flemist/async-utils/0.0.19:
-    resolution: {integrity: sha512-X+R7lsaagh/zUWBeu8FZOfHwxCCQyeIoupSRaSThuyaETNTsr09hkFJtenDJJLr3EMrZJ88cUeC3QNDBvU1NWA==}
+  /@flemist/async-utils/0.0.20:
+    resolution: {integrity: sha512-MFFNRhuL89GWquKjEvV20bjQnuNJ7oHfpEUZ7vHcicZMXIfAgQ+5dMSmEJEO9KOtXiwF4BbGrUCWD0qA5xjDAw==}
     engines: {node: '>=10.4.0', pnpm: ^7.1.6}
     dependencies:
       '@flemist/abort-controller-fast': 0.0.6
@@ -1435,12 +1426,12 @@ packages:
       '@flemist/pairing-heap': 0.0.1
       tslib: 2.5.0
 
-  /@flemist/time-limits/0.0.9:
-    resolution: {integrity: sha512-J2CUaYH4DLkByzxOLDX7M5/bWtGqoaQ0ahmHTgyI5dolhqBPF3w+ItJbihRlHpx+3geyJyC/4BATa2etCdRQJw==}
+  /@flemist/time-limits/0.0.10:
+    resolution: {integrity: sha512-fl6vaRKj1J9jDLd3UTXYWI3n5unIG9EaiJnG4QZrONrH12ciE3g9veqNaZYk3iE6QfnRjAkvT94enZYsfCK5rQ==}
     engines: {node: '>=10.4.0', pnpm: ^7.1.6}
     dependencies:
-      '@flemist/abort-controller-fast': 0.0.5
-      '@flemist/async-utils': 0.0.16
+      '@flemist/abort-controller-fast': 0.0.6
+      '@flemist/async-utils': 0.0.20
       '@flemist/priority-queue': 0.0.9
       '@flemist/time-controller': 0.0.1
       tslib: 2.5.0

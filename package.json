@@ -1,6 +1,6 @@
 {
   "name": "@flemist/cache",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Flexible file and memory caches",
   "main": "dist/lib/node/index.cjs",
   "module": "dist/lib/node/index.mjs",
@@ -134,9 +134,9 @@
     "typescript": "=4.7.4"
   },
   "dependencies": {
-    "@flemist/async-utils": "^0.0.19",
+    "@flemist/async-utils": "^0.0.20",
     "@flemist/time-controller": "^0.0.1",
-    "@flemist/time-limits": "^0.0.9",
+    "@flemist/time-limits": "^0.0.10",
     "tslib": "^2.5.0"
   }
 }
