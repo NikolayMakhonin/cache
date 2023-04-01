@@ -1,8 +1,9 @@
-import type {BufferConverter, CacheItem, CacheStrategy, Lock, PromiseOrValue} from './contracts'
-import type {IValueState} from '@flemist/async-utils'
+import type {BufferConverter} from './contracts'
+import type {IValueState, PromiseOrValue} from '@flemist/async-utils'
 import path from 'path'
 import {fileControllerDefault, FileStat, IFileController} from './FileController'
 import crypto from 'crypto'
+import {CacheItem, CacheStrategy, Lock} from 'src/common/cache/contracts'
 
 export type FileCacheOptions<
   Result = any,

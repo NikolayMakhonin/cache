@@ -109,7 +109,7 @@
     "@types/mocha": "10.0.1",
     "@types/node": "18.15.11",
     "@zerollup/ts-transform-paths": "1.7.18",
-    "eslint": "8.37.0",
+    "eslint": "=8.22.0",
     "eslint-config-pro": "3.0.18",
     "expect": "29.5.0",
     "globby": "=11.1.0",
@@ -134,7 +134,7 @@
     "typescript": "=4.7.4"
   },
   "dependencies": {
-    "@flemist/async-utils": "^0.0.18",
+    "@flemist/async-utils": "^0.0.19",
     "@flemist/time-controller": "^0.0.1",
     "@flemist/time-limits": "^0.0.9",
     "tslib": "^2.5.0"

@@ -1,5 +1,5 @@
-import type { CacheStrategy } from './contracts';
 import type { ITimeController } from '@flemist/time-controller';
+import { CacheStrategy } from "./contracts";
 export declare type MemCacheOptions = {
     lifeTime: number;
     updateInterval?: number;
