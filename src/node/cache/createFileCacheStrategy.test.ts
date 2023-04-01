@@ -1,11 +1,11 @@
 import { createTestVariants } from '@flemist/test-variants'
 import { delay, PromiseOrValue } from '@flemist/async-utils'
 import { TimeControllerMock } from '@flemist/time-controller'
-import { toCached } from './toCached'
+import { toCached } from 'src/common/cache/toCached'
 import { awaitTime } from '@flemist/test-utils'
 import {createFileCacheStrategy} from './createFileCacheStrategy'
 import {createBufferConverterJson} from './bufferConverters'
-import {getHashKeyFunc} from './getHashKeyFunc'
+import {getHashKeyFunc} from 'src/common/cache/getHashKeyFunc'
 import {FileControllerMock} from './FileController'
 
 describe('toCached', function () {

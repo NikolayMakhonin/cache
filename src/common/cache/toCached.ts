@@ -1,14 +1,7 @@
-import type {
-  CacheStrategy,
-  Func,
-  GetKeyFunc,
-  OfPromise,
-  ToPromise,
-  Lock,
-} from './contracts'
 import {Pool, poolRunWait} from '@flemist/time-limits'
-import type { IValueState } from '@flemist/async-utils'
+import type {Func, IValueState, OfPromise, ToPromise} from '@flemist/async-utils'
 import { isPromiseLike, createValueState } from '@flemist/async-utils'
+import {CacheStrategy, GetKeyFunc, Lock} from 'src/common/cache/contracts'
 
 export function toCached<
   This, Args extends any[], Result,
