@@ -7,17 +7,20 @@ specifiers:
   '@babel/plugin-transform-runtime': 7.21.4
   '@babel/preset-env': 7.21.4
   '@babel/runtime-corejs3': 7.21.0
+  '@flemist/async-utils': ^0.0.18
   '@flemist/copy-glob-flat': 0.0.5
   '@flemist/karma-custom-launcher': 0.0.0
   '@flemist/test-utils': 0.1.4
   '@flemist/test-variants': 0.0.16
+  '@flemist/time-controller': ^0.0.1
+  '@flemist/time-limits': ^0.0.9
   '@rollup/plugin-alias': 4.0.3
   '@rollup/plugin-babel': 6.0.3
   '@rollup/plugin-commonjs': '=21.1.0'
   '@rollup/plugin-inject': 5.0.3
   '@rollup/plugin-json': 6.0.0
   '@rollup/plugin-multi-entry': 6.0.0
-  '@rollup/plugin-node-resolve': 15.0.1
+  '@rollup/plugin-node-resolve': '13'
   '@rollup/plugin-replace': 5.0.2
   '@rollup/plugin-typescript': 11.0.0
   '@rollup/pluginutils': 5.0.2
@@ -51,6 +54,9 @@ specifiers:
   typescript: '=4.7.4'
 
 dependencies:
+  '@flemist/async-utils': 0.0.18
+  '@flemist/time-controller': 0.0.1
+  '@flemist/time-limits': 0.0.9
   tslib: 2.5.0
 
 devDependencies:
@@ -70,7 +76,7 @@ devDependencies:
   '@rollup/plugin-inject': 5.0.3_rollup@2.79.1
   '@rollup/plugin-json': 6.0.0_rollup@2.79.1
   '@rollup/plugin-multi-entry': 6.0.0_rollup@2.79.1
-  '@rollup/plugin-node-resolve': 15.0.1_rollup@2.79.1
+  '@rollup/plugin-node-resolve': 13.3.0_rollup@2.79.1
   '@rollup/plugin-replace': 5.0.2_rollup@2.79.1
   '@rollup/plugin-typescript': 11.0.0_zg3dbtkqnuqypg3tuw3rnargrq
   '@rollup/pluginutils': 5.0.2_rollup@2.79.1
@@ -1336,7 +1342,39 @@ packages:
     resolution: {integrity: sha512-ewpqfmNx+V5dqTzVBxi7syhhsFRk5ktNOd0d85tKyGkqwzoMyJSYGBPmycYhlUDSsIN/3Nb2EaE0tPOtfw6PNQ==}
     dependencies:
       tslib: 2.5.0
-    dev: true
+
+  /@flemist/abort-controller-fast/0.0.6:
+    resolution: {integrity: sha512-guk6p9Vvey+IM3xt4/YUi1n4iN6TV3xJdOx5nchDOGlvgNBZFfSAXS2LQIFjIeelQ3YjoXwxYxIbvUIzPwTf4Q==}
+    dependencies:
+      tslib: 2.5.0
+    dev: false
+
+  /@flemist/async-utils/0.0.11:
+    resolution: {integrity: sha512-XuHqpW9Z4teIM/aWWYZPZVLtS0DOOqhrTV/6DUcglSE2fZUfbyImdljRYq73ovwAwUy6ZmARFh25C+CoOf5UPw==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      '@flemist/abort-controller-fast': 0.0.5
+      '@flemist/time-controller': 0.0.1
+      tslib: 2.5.0
+    dev: false
+
+  /@flemist/async-utils/0.0.16:
+    resolution: {integrity: sha512-3oqWfZz2BBEUJNmKgxK8y0LN5UEBqkqEXXfvdQADF1X2L8HFGBLTHnm0VTHtHH230O7bA9buyiEAWywKGf2tQQ==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      '@flemist/abort-controller-fast': 0.0.5
+      '@flemist/time-controller': 0.0.1
+      tslib: 2.5.0
+    dev: false
+
+  /@flemist/async-utils/0.0.18:
+    resolution: {integrity: sha512-hbp8r86KNkCGeDZTnYtoGBFgaXHoKLMV6vfw3JbbYOUq3zCestW4DW4RRLwKt9kV12nZnipjZV/yQQVnkrJU4A==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      '@flemist/abort-controller-fast': 0.0.6
+      '@flemist/time-controller': 0.0.1
+      tslib: 2.5.0
+    dev: false
 
   /@flemist/copy-glob-flat/0.0.5:
     resolution: {integrity: sha512-nw2x3zS78uRv7jlR709oXiMXhtTlTS2+WJiy3aTabcayv50CNHMKXevv9WR7YjUJzS7743EdPJl5wAKjIq9Fdg==}
@@ -1357,7 +1395,24 @@ packages:
     engines: {node: '>=10.4.0', pnpm: ^7.1.6}
     dependencies:
       tslib: 2.5.0
-    dev: true
+
+  /@flemist/pairing-heap/0.0.7:
+    resolution: {integrity: sha512-6t5LhqU5ahJzhsrnf5I2clbq1FWZbpEp+41mVEatQxm5/G9x2jk8OlLScEMSlGubcx/ZFLiS8ndge6a7ZiZ/cQ==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      tslib: 2.5.0
+    dev: false
+
+  /@flemist/priority-queue/0.0.9:
+    resolution: {integrity: sha512-+yBaLX972yTBzj5TKNhxsoQspbiKC8u3CRR0HNO5rahJ4ixYJMAVFmn8D9S0TiLqTd1NOlYteSqe3Sy9epW8Ag==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      '@flemist/abort-controller-fast': 0.0.5
+      '@flemist/async-utils': 0.0.11
+      '@flemist/pairing-heap': 0.0.7
+      '@flemist/time-controller': 0.0.1
+      tslib: 2.5.0
+    dev: false
 
   /@flemist/test-utils/0.1.4_expect@29.5.0:
     resolution: {integrity: sha512-Ri/38qBs7sK7wh07otQdg9TRtkwlLex1PTgVtx/4PojXhSIoA5o/LJkZj1+eJk3rHlCDb2Wgch2zmvVEGGLU9g==}
@@ -1384,7 +1439,17 @@ packages:
     dependencies:
       '@flemist/pairing-heap': 0.0.1
       tslib: 2.5.0
-    dev: true
+
+  /@flemist/time-limits/0.0.9:
+    resolution: {integrity: sha512-J2CUaYH4DLkByzxOLDX7M5/bWtGqoaQ0ahmHTgyI5dolhqBPF3w+ItJbihRlHpx+3geyJyC/4BATa2etCdRQJw==}
+    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+    dependencies:
+      '@flemist/abort-controller-fast': 0.0.5
+      '@flemist/async-utils': 0.0.16
+      '@flemist/priority-queue': 0.0.9
+      '@flemist/time-controller': 0.0.1
+      tslib: 2.5.0
+    dev: false
 
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
@@ -1624,17 +1689,14 @@ packages:
       rollup: 2.79.1
     dev: true
 
-  /@rollup/plugin-node-resolve/15.0.1_rollup@2.79.1:
-    resolution: {integrity: sha512-ReY88T7JhJjeRVbfCyNj+NXAG3IIsVMsX9b5/9jC98dRP8/yxlZdz7mHZbHk5zHr24wZZICS5AcXsFZAXYUQEg==}
-    engines: {node: '>=14.0.0'}
+  /@rollup/plugin-node-resolve/13.3.0_rollup@2.79.1:
+    resolution: {integrity: sha512-Lus8rbUo1eEcnS4yTFKLZrVumLPY+YayBdWXgFSHYhTT2iJbMhoaaBL3xl5NCdeRytErGr8tZ0L71BMRmnlwSw==}
+    engines: {node: '>= 10.0.0'}
     peerDependencies:
-      rollup: ^2.78.0||^3.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
+      rollup: ^2.42.0
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@2.79.1
-      '@types/resolve': 1.20.2
+      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
+      '@types/resolve': 1.17.1
       deepmerge: 4.3.1
       is-builtin-module: 3.2.1
       is-module: 1.0.0
@@ -1804,8 +1866,10 @@ packages:
     resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
     dev: true
 
-  /@types/resolve/1.20.2:
-    resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+  /@types/resolve/1.17.1:
+    resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
+    dependencies:
+      '@types/node': 18.15.11
     dev: true
 
   /@types/semver/7.3.13:
