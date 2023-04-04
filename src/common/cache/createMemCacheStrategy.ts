@@ -5,7 +5,7 @@ import { timeControllerDefault } from '@flemist/time-controller'
 import {CacheItemAsync, CacheStrategy, Lock} from 'src/common/cache/contracts'
 
 export type MemCacheOptions = {
-  lifeTime: number,
+  lifeTime?: number,
   updateInterval?: number,
   timeController?: ITimeController,
 }
@@ -55,7 +55,7 @@ export function createMemCacheStrategy<
         if (updateInterval) {
           await delay(updateInterval, null, timeController)
 
-          if (timeController.now() - cacheItem.options.dateRequest > lifeTime) {
+          if (lifeTime != null && timeController.now() - cacheItem.options.dateRequest > lifeTime) {
             cache.delete(key)
             break
           }
@@ -63,7 +63,9 @@ export function createMemCacheStrategy<
           await func(state)
         }
         else {
-          await delay(lifeTime, null, timeController)
+          if (lifeTime != null) {
+            await delay(lifeTime, null, timeController)
+          }
           cache.delete(key)
           break
         }
