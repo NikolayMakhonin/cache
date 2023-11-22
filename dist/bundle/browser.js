@@ -331,13 +331,14 @@ return h=n.sent(),[3,3];case 2:h=a.value,n.label=3
 ;case 3:
 e=h,a.options.dateRequest=o.now(),n.label=4
 ;case 4:
-return e.hasValue?s?[4,l(s,null,o)]:[3,7]:(u.delete(i),[3,10])
+return e.hasValue?s?[4,l(s,null,o)]:[3,7]:(u.delete(i),[3,11])
 ;case 5:
-return n.sent(),o.now()-a.options.dateRequest>r?(u.delete(i),[3,10]):[4,t(e)]
-;case 6:return n.sent(),[3,9];case 7:
-return[4,l(r,null,o)];case 8:
-return n.sent(),u.delete(i),[3,10];case 9:
-return[3,4];case 10:return[2]}}))}))
+return n.sent(),null!=r&&o.now()-a.options.dateRequest>r?(u.delete(i),[3,11]):[4,t(e)]
+;case 6:return n.sent(),[3,10];case 7:
+return null==r?[3,9]:[4,l(r,null,o)];case 8:
+n.sent(),n.label=9;case 9:
+return u.delete(i),[3,11];case 10:return[3,4]
+;case 11:return[2]}}))}))
 }()),c(a.value)?[4,a.value]:[3,2];case 1:
 return f=d.sent(),[3,3];case 2:f=a.value,d.label=3
 ;case 3:

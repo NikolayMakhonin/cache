@@ -23,14 +23,16 @@ function createMemCacheStrategy({ lifeTime, updateInterval, timeController, }) {
                         }
                         if (updateInterval) {
                             yield delay(updateInterval, null, timeController);
-                            if (timeController.now() - cacheItem.options.dateRequest > lifeTime) {
+                            if (lifeTime != null && timeController.now() - cacheItem.options.dateRequest > lifeTime) {
                                 cache.delete(key);
                                 break;
                             }
                             yield func(state);
                         }
                         else {
-                            yield delay(lifeTime, null, timeController);
+                            if (lifeTime != null) {
+                                yield delay(lifeTime, null, timeController);
+                            }
                             cache.delete(key);
                             break;
                         }

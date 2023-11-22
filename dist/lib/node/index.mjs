@@ -5,6 +5,9 @@ export { createBufferConverterJson, createBufferConverterString } from './cache/
 export { FileControllerMock, fileControllerDefault } from './cache/FileController.mjs';
 export { createFileCacheStrategy } from './cache/createFileCacheStrategy.mjs';
 export { getHashKeyFunc } from './cache/getHashKeyFunc.mjs';
+export { readDirRecursive } from './cache/readDirRecursive.mjs';
+export { deleteEmptyDirs } from './cache/deleteEmptyDirs.mjs';
+export { FileMap } from './cache/FileMap.mjs';
 import 'tslib';
 import '@flemist/time-limits';
 import '@flemist/async-utils';
