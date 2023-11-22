@@ -48,10 +48,8 @@ export class FileMap<Key, Value> implements IAsyncMap<Key, Value> {
       throw new Error(`Disallowed '..' or '.' in path: ${relativePath}`)
     }
 
-    const filePath = path.join(
-      this._dir,
-      this._keyPathConverter.valueToString(key),
-    )
+    const filePath = path.join(this._dir, relativePath)
+
     return filePath
   }
 
