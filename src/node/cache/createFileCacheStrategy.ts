@@ -1,7 +1,7 @@
 import type {BufferConverter} from './contracts'
 import type {IValueState, PromiseOrValue} from '@flemist/async-utils'
 import path from 'path'
-import {fileControllerDefault, FileStat, IFileController} from './FileController'
+import {fileControllerDefault, PathStat, IFileController} from './FileController'
 import crypto from 'crypto'
 import {CacheItem, CacheStrategy, Lock} from 'src/common/cache/contracts'
 
@@ -15,7 +15,7 @@ export type FileCacheOptions<
   filterArgs?: (this: This, args: Args) => PromiseOrValue<boolean>
   filterResult?: (this: This, state: IValueState<Result>, args: Args) => PromiseOrValue<boolean>
   fileController?: IFileController
-  isExpired?: (this: This, state: IValueState<Result>, args: Args, fileStat: FileStat) => PromiseOrValue<boolean>
+  isExpired?: (this: This, state: IValueState<Result>, args: Args, fileStat: PathStat) => PromiseOrValue<boolean>
   checkHash?: boolean
 }
 

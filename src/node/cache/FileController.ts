@@ -3,16 +3,24 @@ import path from 'path'
 import {Pool, poolRunWait} from '@flemist/time-limits'
 import * as os from 'os'
 
+export type DontThrowIfNotExist = {
+  dontThrowIfNotExist?: boolean
+}
 export type ExistPath = (_path: string) => Promise<boolean>
-export type DeletePath = (_path: string) => Promise<boolean>
-export type ReadFile = (filePath: string) => Promise<Buffer>
+export type DeletePath = (_path: string, ) => Promise<boolean>
+export type ReadFile = (filePath: string, params?: DontThrowIfNotExist)
+  => Promise<Buffer | undefined>
 export type WriteFile = (filePath: string, data: Buffer) => Promise<void>
-export type FileStat = {
+export type PathStat = {
+  isDirectory: boolean
   size: number
   dateCreated: number
   dateModified: number
 }
-export type GetFileStat = (filePath: string) => Promise<FileStat>
+export type GetFileStat = (filePath: string, params?: DontThrowIfNotExist)
+  => Promise<PathStat | undefined>
+export type ReadDir = (dirPath: string, params?: DontThrowIfNotExist)
+  => Promise<string[] | undefined>
 
 export type IFileController = {
   existPath: ExistPath
@@ -20,20 +28,31 @@ export type IFileController = {
   readFile: ReadFile
   writeFile: WriteFile
   deletePath: DeletePath
+  readDir: ReadDir
 }
 
 const filePool = new Pool(Math.min(os.cpus().length, 100))
 
 export const fileControllerDefault: IFileController = {
-  existPath(_path: string): Promise<boolean> {
-    return fs.promises.stat(_path).catch(() => null)
+  async existPath(_path: string): Promise<boolean> {
+    try {
+      return !!await fs.promises.stat(_path)
+    }
+    catch {
+      return false
+    }
   },
 
-  readFile(filePath: string): Promise<Buffer> {
+  readFile(filePath: string, params?: DontThrowIfNotExist): Promise<Buffer|undefined> {
     return poolRunWait({
       pool : filePool,
       count: 1,
-      func : () => fs.promises.readFile(filePath),
+      func : () => fs.promises.readFile(filePath).catch(err => {
+        if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
+          return void 0
+        }
+        throw err
+      }),
     })
   },
 
@@ -44,17 +63,30 @@ export const fileControllerDefault: IFileController = {
       pool : filePool,
       count: 1,
       func : async () => {
-        if (!await fs.promises.stat(dir).catch(() => null)) {
-          await fs.promises.mkdir(dir, {recursive: true})
+        if (!await this.existPath(dir)) {
+          try {
+            await fs.promises.mkdir(dir, {recursive: true})
+          }
+          catch (err) {
+            if (err.code !== 'EEXIST') {
+              throw err
+            }
+          }
         }
         await fs.promises.writeFile(filePath, data)
       },
     })
   },
 
-  async getStat(filePath: string): Promise<FileStat> {
-    const stat = await fs.promises.stat(filePath)
-    return {
+  async getStat(filePath: string, params?: DontThrowIfNotExist): Promise<PathStat|undefined> {
+    const stat = await fs.promises.stat(filePath).catch((err) => {
+      if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
+        return void 0
+      }
+      throw err
+    })
+    return stat && {
+      isDirectory : stat.isDirectory(),
       size        : stat.size,
       dateCreated : Math.min(stat.birthtimeMs, stat.mtimeMs),
       dateModified: stat.mtimeMs,
@@ -62,18 +94,38 @@ export const fileControllerDefault: IFileController = {
   },
 
   async deletePath(_path: string): Promise<boolean> {
-    if (!this.existPath(_path)) {
+    if (!await this.existPath(_path)) {
       return false
     }
-    await fs.promises.rm(_path, {recursive: true, force: true})
+
+    await fs.promises.rm(_path, {recursive: true, force: true}).catch(err => {
+      if (err.code === 'ENOENT') {
+        return null
+      }
+      throw err
+    })
+
     return true
+  },
+
+  readDir(dirPath: string, params?: DontThrowIfNotExist): Promise<string[] | undefined> {
+    return poolRunWait({
+      pool : filePool,
+      count: 1,
+      func : () => fs.promises.readdir(dirPath).catch(err => {
+        if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
+          return void 0
+        }
+        throw err
+      }),
+    })
   },
 }
 
 export class FileControllerMock implements IFileController {
   private readonly _files = new Map<string, {
     data: Buffer
-    stat: FileStat
+    stat: PathStat
   }>()
 
   constructor() {
@@ -84,8 +136,11 @@ export class FileControllerMock implements IFileController {
     return Promise.resolve(this._files.has(_path))
   }
 
-  readFile(filePath: string): Promise<Buffer> {
+  readFile(filePath: string, params?: DontThrowIfNotExist): Promise<Buffer | undefined> {
     if (!this._files.has(filePath)) {
+      if (params?.dontThrowIfNotExist) {
+        return Promise.resolve(void 0)
+      }
       return Promise.reject(new Error('File is not exist: ' + filePath))
     }
     return Promise.resolve(this._files.get(filePath)?.data)
@@ -97,6 +152,7 @@ export class FileControllerMock implements IFileController {
     this._files.set(filePath, {
       data,
       stat: {
+        isDirectory : false,
         size        : data.length,
         dateCreated : file?.stat.dateCreated ?? now,
         dateModified: now,
@@ -105,18 +161,34 @@ export class FileControllerMock implements IFileController {
     return Promise.resolve()
   }
 
-  getStat(filePath: string): Promise<FileStat> {
+  getStat(filePath: string, params?: DontThrowIfNotExist): Promise<PathStat | undefined> {
     if (!this._files.has(filePath)) {
+      if (params?.dontThrowIfNotExist) {
+        return Promise.resolve(void 0)
+      }
       return Promise.reject(new Error('File is not exist: ' + filePath))
     }
     return Promise.resolve(this._files.get(filePath)?.stat)
   }
 
-  deletePath(_path: string): Promise<boolean> {
-    if (!this.existPath(_path)) {
-      return Promise.resolve(false)
+  async deletePath(_path: string): Promise<boolean> {
+    if (!await this.existPath(_path)) {
+      return false
     }
-    this._files.delete(_path)
-    return Promise.resolve(true)
+
+    Array.from(this._files.keys())
+      .filter(filePath => filePath.startsWith(_path))
+      .forEach(filePath => this._files.delete(filePath))
+
+    return true
+  }
+
+  readDir(dirPath: string, params?: DontThrowIfNotExist): Promise<string[] | undefined> {
+    const files = Array.from(this._files.keys())
+      .filter(filePath => filePath.startsWith(dirPath))
+      .map(filePath => filePath.slice(dirPath.length))
+      .filter(filePath => !filePath.includes('/'))
+
+    return Promise.resolve(files)
   }
 }
