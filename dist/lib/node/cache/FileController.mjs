@@ -8,15 +8,27 @@ const filePool = new Pool(Math.min(os.cpus().length, 100));
 const fileControllerDefault = {
     existPath(_path) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!_path) {
+                return false;
+            }
             try {
                 return !!(yield fs.promises.stat(_path));
             }
-            catch (_a) {
-                return false;
+            catch (err) {
+                if (err.code === 'ENOENT') {
+                    return false;
+                }
+                throw err;
             }
         });
     },
     readFile(filePath, params) {
+        if (!filePath) {
+            if (params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) {
+                return Promise.resolve(void 0);
+            }
+            return Promise.reject(new Error('File path is empty'));
+        }
         return poolRunWait({
             pool: filePool,
             count: 1,
@@ -53,6 +65,12 @@ const fileControllerDefault = {
     },
     getStat(filePath, params) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!filePath) {
+                if (params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) {
+                    return Promise.resolve(void 0);
+                }
+                return Promise.reject(new Error('File path is empty'));
+            }
             const stat = yield fs.promises.stat(filePath).catch((err) => {
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
@@ -69,7 +87,7 @@ const fileControllerDefault = {
     },
     deletePath(_path) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(yield this.existPath(_path))) {
+            if (!_path || !(yield this.existPath(_path))) {
                 return false;
             }
             yield fs.promises.rm(_path, { recursive: true, force: true }).catch(err => {

@@ -10,21 +10,50 @@ import { deleteEmptyDirs } from './deleteEmptyDirs.mjs';
 import 'fs';
 import 'os';
 
-function checkHash({ fileController, buffer: _buffer, hashBuffer: _hashBuffer, filePath, hashFilePath, deleteIfHashIncorrect, }) {
+function checkExist({ fileController, filePath, hashFilePath, deleteIfCorrupted, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [existHash, existFile] = yield Promise.all([
+            hashFilePath && fileController.existPath(hashFilePath),
+            fileController.existPath(filePath),
+        ]);
+        if (!hashFilePath) {
+            return existFile;
+        }
+        if (!!existFile === !!existHash) {
+            return existFile;
+        }
+        if (deleteIfCorrupted) {
+            console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`);
+            yield Promise.all([
+                fileController.deletePath(hashFilePath),
+                fileController.deletePath(filePath),
+            ]);
+        }
+        else {
+            console.warn(`Incorrect hash:\r\n${filePath}\r\n${hashFilePath}`);
+        }
+        return false;
+    });
+}
+function checkHash({ fileController, buffer: _buffer, hashBuffer: _hashBuffer, filePath, hashFilePath, deleteIfCorrupted, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const [buffer, hashBuffer] = yield Promise.all([
             _buffer || fileController.readFile(filePath),
             _hashBuffer || fileController.readFile(hashFilePath),
         ]);
-        const hashExpected = hashBuffer.toString('utf-8');
-        const hashActual = crypto.createHash('sha256').update(buffer).digest('base64url');
+        const hashExpected = hashBuffer == null
+            ? null
+            : hashBuffer.toString('utf-8');
+        const hashActual = buffer == null
+            ? null
+            : crypto.createHash('sha256').update(buffer).digest('base64url');
         if (hashExpected !== hashActual) {
-            if (deleteIfHashIncorrect) {
+            if (deleteIfCorrupted) {
+                console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`);
                 yield Promise.all([
                     fileController.deletePath(hashFilePath),
                     fileController.deletePath(filePath),
                 ]);
-                console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`);
             }
             else {
                 console.warn(`Incorrect hash:\r\n${filePath}\r\n${hashFilePath}`);
@@ -74,18 +103,20 @@ class FileMap {
             const hashFilePath = this._options.useHash
                 ? filePath + '.hash'
                 : null;
-            const exist = yield Promise.all([
-                hashFilePath && this._fileController.existPath(hashFilePath),
-                this._fileController.existPath(filePath),
-            ]);
-            if (hashFilePath && !exist[0] || !exist[1]) {
+            if (!(yield checkExist({
+                fileController: this._fileController,
+                filePath,
+                hashFilePath,
+                deleteIfCorrupted: this._options.deleteIfCorrupted,
+            }))) {
+                yield deleteEmptyDirs(this._fileController, this._dir, filePath);
                 return void 0;
             }
             const [hashBuffer, buffer] = yield Promise.all([
                 hashFilePath && this._fileController.readFile(hashFilePath, { dontThrowIfNotExist: true }),
                 this._fileController.readFile(filePath, { dontThrowIfNotExist: true }),
             ]);
-            if (hashFilePath && hashBuffer == null || buffer == null) {
+            if ((!hashFilePath || hashBuffer == null) && buffer == null) {
                 return void 0;
             }
             if (hashFilePath && !(yield checkHash({
@@ -94,8 +125,9 @@ class FileMap {
                 hashBuffer,
                 filePath,
                 hashFilePath,
-                deleteIfHashIncorrect: this._options.deleteIfHashIncorrect,
+                deleteIfCorrupted: this._options.deleteIfCorrupted,
             }))) {
+                yield deleteEmptyDirs(this._fileController, this._dir, filePath);
                 return void 0;
             }
             const value = yield this._valueBufferConverter.bufferToValue(buffer);
@@ -119,19 +151,22 @@ class FileMap {
             const hashFilePath = this._options.useHash
                 ? filePath + '.hash'
                 : null;
-            const exist = yield Promise.all([
-                hashFilePath && this._fileController.existPath(hashFilePath),
-                this._fileController.existPath(filePath),
-            ]);
-            if (hashFilePath && !exist[0] || !exist[1]) {
+            if (!(yield checkExist({
+                fileController: this._fileController,
+                filePath,
+                hashFilePath,
+                deleteIfCorrupted: this._options.deleteIfCorrupted,
+            }))) {
+                yield deleteEmptyDirs(this._fileController, this._dir, filePath);
                 return false;
             }
             if (_checkHash && hashFilePath && !(yield checkHash({
                 fileController: this._fileController,
                 filePath,
                 hashFilePath,
-                deleteIfHashIncorrect: this._options.deleteIfHashIncorrect,
+                deleteIfCorrupted: this._options.deleteIfCorrupted,
             }))) {
+                yield deleteEmptyDirs(this._fileController, this._dir, filePath);
                 return false;
             }
             return true;

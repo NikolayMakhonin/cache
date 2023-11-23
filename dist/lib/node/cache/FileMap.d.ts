@@ -12,7 +12,7 @@ export interface IAsyncMap<K, V> {
 }
 export declare type FileMapOptions = {
     useHash?: boolean;
-    deleteIfHashIncorrect?: boolean;
+    deleteIfCorrupted?: boolean;
 };
 export declare type FileMapArgs<Key, Value> = {
     dir: string;
