@@ -1,5 +1,5 @@
 import {FileMap} from 'src/node/cache/FileMap'
-import {createBufferConverterJson} from 'src/node'
+import {createBufferConverterJson, fileControllerDefault} from 'src/node'
 import fs from 'fs'
 import path from 'path'
 
@@ -25,9 +25,9 @@ describe('FileMap', function () {
     await fs.promises.rm(dir, {recursive: true, force: true}).catch(() => null)
 
     function createFileMap({
-      deleteIfHashIncorrect,
+      deleteIfCorrupted,
     }: {
-      deleteIfHashIncorrect: boolean
+      deleteIfCorrupted: boolean
     }) {
       return new FileMap<string[], Value>({
         dir,
@@ -42,17 +42,17 @@ describe('FileMap', function () {
         valueBufferConverter: createBufferConverterJson<Value>(),
         options             : {
           useHash: true,
-          deleteIfHashIncorrect,
+          deleteIfCorrupted,
         },
       })
     }
 
     const fileMap = createFileMap({
-      deleteIfHashIncorrect: false,
+      deleteIfCorrupted: false,
     })
 
     const fileMapWithAutoDelete = createFileMap({
-      deleteIfHashIncorrect: true,
+      deleteIfCorrupted: true,
     })
 
     // pre check:
@@ -157,11 +157,11 @@ describe('FileMap', function () {
     })
 
     const hash = await fs.promises.readFile(path.join(dir, 'key5/key6.hash'), 'utf-8')
-    fs.writeFileSync(path.join(dir, 'key5/key6'), JSON.stringify({
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6'), Buffer.from(JSON.stringify({
       a: 7,
       b: '8',
-    }))
-    fs.writeFileSync(path.join(dir, 'key5/key6.hash'), hash)
+    }), 'utf-8'))
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6.hash'), Buffer.from(hash, 'utf-8'))
     expect(await fileMap.hasKey(['key5', 'key6'])).toEqual(true)
     expect(await fileMap.hasValue(['key5', 'key6'])).toEqual(true)
     expect(await fileMap.get(['key5', 'key6'])).toEqual({
@@ -169,10 +169,10 @@ describe('FileMap', function () {
       b: '8',
     })
 
-    fs.writeFileSync(path.join(dir, 'key5/key6'), JSON.stringify({
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6'), Buffer.from(JSON.stringify({
       a: 7,
       b: '9',
-    }))
+    }), 'utf-8'))
     expect(await fileMap.hasKey(['key5', 'key6'])).toEqual(true)
     expect(await fileMap.hasValue(['key5', 'key6'])).toEqual(false)
     expect(await fileMap.get(['key5', 'key6'])).toEqual(void 0)
@@ -186,14 +186,28 @@ describe('FileMap', function () {
     expect(await fileMapWithAutoDelete.hasValue(['key5', 'key6'])).toEqual(false)
     expect(await fileMap.hasKey(['key5', 'key6'])).toEqual(false)
 
-    fs.writeFileSync(path.join(dir, 'key5/key6'), JSON.stringify({
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6'), Buffer.from(JSON.stringify({
       a: 7,
       b: '9',
-    }))
-    fs.writeFileSync(path.join(dir, 'key5/key6.hash'), hash)
+    }), 'utf-8'))
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6.hash'), Buffer.from(hash, 'utf-8'))
     expect(await fileMap.hasKey(['key5', 'key6'])).toEqual(true)
     expect(await fileMapWithAutoDelete.get(['key5', 'key6'])).toEqual(void 0)
     expect(await fileMap.hasKey(['key5', 'key6'])).toEqual(false)
+
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6'), Buffer.from(JSON.stringify({
+      a: 7,
+      b: '9',
+    }), 'utf-8'))
+    expect(await fileMapWithAutoDelete.hasKey(['key5', 'key6'])).toEqual(false)
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6.hash'), Buffer.from(hash, 'utf-8'))
+    expect(await fileMapWithAutoDelete.hasKey(['key5', 'key6'])).toEqual(false)
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6'), Buffer.from(JSON.stringify({
+      a: 7,
+      b: '9',
+    }), 'utf-8'))
+    await fileControllerDefault.writeFile(path.join(dir, 'key5/key6.hash'), Buffer.from(hash, 'utf-8'))
+    expect(await fileMapWithAutoDelete.hasKey(['key5', 'key6'])).toEqual(true)
 
     // clear:
     await fileMap.clear()

@@ -21,7 +21,7 @@ export interface IAsyncMap<K, V> {
 
 export type FileMapOptions = {
   useHash?: boolean
-  deleteIfHashIncorrect?: boolean
+  deleteIfCorrupted?: boolean
 }
 
 export type FileMapArgs<Key, Value> = {
@@ -32,35 +32,76 @@ export type FileMapArgs<Key, Value> = {
   options?: FileMapOptions
 }
 
+async function checkExist({
+  fileController,
+  filePath,
+  hashFilePath,
+  deleteIfCorrupted,
+}: {
+  fileController: IFileController,
+  filePath: string,
+  hashFilePath?: string|null,
+  deleteIfCorrupted?: boolean,
+}): Promise<boolean> {
+  const [existHash, existFile] = await Promise.all([
+    hashFilePath && fileController.existPath(hashFilePath),
+    fileController.existPath(filePath),
+  ])
+
+  if (!hashFilePath) {
+    return existFile
+  }
+
+  if (!!existFile === !!existHash) {
+    return existFile
+  }
+
+  if (deleteIfCorrupted) {
+    console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`)
+    await Promise.all([
+      fileController.deletePath(hashFilePath),
+      fileController.deletePath(filePath),
+    ])
+  }
+  else {
+    console.warn(`Incorrect hash:\r\n${filePath}\r\n${hashFilePath}`)
+  }
+  return false
+}
+
 async function checkHash({
   fileController,
   buffer: _buffer,
   hashBuffer: _hashBuffer,
   filePath,
   hashFilePath,
-  deleteIfHashIncorrect,
+  deleteIfCorrupted,
 }: {
   fileController: IFileController,
   buffer?: Buffer,
   hashBuffer?: Buffer,
   filePath: string,
   hashFilePath: string,
-  deleteIfHashIncorrect?: boolean,
+  deleteIfCorrupted?: boolean,
 }): Promise<boolean> {
   const [buffer, hashBuffer] = await Promise.all([
     _buffer || fileController.readFile(filePath),
     _hashBuffer || fileController.readFile(hashFilePath),
   ])
 
-  const hashExpected = hashBuffer.toString('utf-8')
-  const hashActual = crypto.createHash('sha256').update(buffer).digest('base64url')
+  const hashExpected = hashBuffer == null
+    ? null
+    : hashBuffer.toString('utf-8')
+  const hashActual = buffer == null
+    ? null
+    : crypto.createHash('sha256').update(buffer).digest('base64url')
   if (hashExpected !== hashActual) {
-    if (deleteIfHashIncorrect) {
+    if (deleteIfCorrupted) {
+      console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`)
       await Promise.all([
         fileController.deletePath(hashFilePath),
         fileController.deletePath(filePath),
       ])
-      console.warn(`Incorrect hash. Files deleted:\r\n${filePath}\r\n${hashFilePath}`)
     }
     else {
       console.warn(`Incorrect hash:\r\n${filePath}\r\n${hashFilePath}`)
@@ -128,11 +169,13 @@ export class FileMap<Key, Value> implements IAsyncMap<Key, Value> {
       ? filePath + '.hash'
       : null
 
-    const exist = await Promise.all([
-      hashFilePath && this._fileController.existPath(hashFilePath),
-      this._fileController.existPath(filePath),
-    ])
-    if (hashFilePath && !exist[0] || !exist[1]) {
+    if (!await checkExist({
+      fileController   : this._fileController,
+      filePath,
+      hashFilePath,
+      deleteIfCorrupted: this._options.deleteIfCorrupted,
+    })) {
+      await deleteEmptyDirs(this._fileController, this._dir, filePath)
       return void 0
     }
 
@@ -141,18 +184,19 @@ export class FileMap<Key, Value> implements IAsyncMap<Key, Value> {
       this._fileController.readFile(filePath, {dontThrowIfNotExist: true}),
     ])
 
-    if (hashFilePath && hashBuffer == null || buffer == null) {
+    if ((!hashFilePath || hashBuffer == null) && buffer == null) {
       return void 0
     }
 
     if (hashFilePath && !await checkHash({
-      fileController       : this._fileController,
+      fileController   : this._fileController,
       buffer,
       hashBuffer,
       filePath,
       hashFilePath,
-      deleteIfHashIncorrect: this._options.deleteIfHashIncorrect,
+      deleteIfCorrupted: this._options.deleteIfCorrupted,
     })) {
+      await deleteEmptyDirs(this._fileController, this._dir, filePath)
       return void 0
     }
 
@@ -177,21 +221,23 @@ export class FileMap<Key, Value> implements IAsyncMap<Key, Value> {
       ? filePath + '.hash'
       : null
 
-    const exist = await Promise.all([
-      hashFilePath && this._fileController.existPath(hashFilePath),
-      this._fileController.existPath(filePath),
-    ])
-
-    if (hashFilePath && !exist[0] || !exist[1]) {
+    if (!await checkExist({
+      fileController   : this._fileController,
+      filePath,
+      hashFilePath,
+      deleteIfCorrupted: this._options.deleteIfCorrupted,
+    })) {
+      await deleteEmptyDirs(this._fileController, this._dir, filePath)
       return false
     }
 
     if (_checkHash && hashFilePath && !await checkHash({
-      fileController       : this._fileController,
+      fileController   : this._fileController,
       filePath,
       hashFilePath,
-      deleteIfHashIncorrect: this._options.deleteIfHashIncorrect,
+      deleteIfCorrupted: this._options.deleteIfCorrupted,
     })) {
+      await deleteEmptyDirs(this._fileController, this._dir, filePath)
       return false
     }
 

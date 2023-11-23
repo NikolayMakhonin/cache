@@ -7,7 +7,7 @@ export type DontThrowIfNotExist = {
   dontThrowIfNotExist?: boolean
 }
 export type ExistPath = (_path: string) => Promise<boolean>
-export type DeletePath = (_path: string, ) => Promise<boolean>
+export type DeletePath = (_path: string,) => Promise<boolean>
 export type ReadFile = (filePath: string, params?: DontThrowIfNotExist)
   => Promise<Buffer | undefined>
 export type WriteFile = (filePath: string, data: Buffer) => Promise<void>
@@ -34,16 +34,28 @@ export type IFileController = {
 const filePool = new Pool(Math.min(os.cpus().length, 100))
 
 export const fileControllerDefault: IFileController = {
-  async existPath(_path: string): Promise<boolean> {
+  async existPath(_path: string|undefined|null): Promise<boolean> {
+    if (!_path) {
+      return false
+    }
     try {
       return !!await fs.promises.stat(_path)
     }
-    catch {
-      return false
+    catch (err) {
+      if (err.code === 'ENOENT') {
+        return false
+      }
+      throw err
     }
   },
 
-  readFile(filePath: string, params?: DontThrowIfNotExist): Promise<Buffer|undefined> {
+  readFile(filePath: string|undefined|null, params?: DontThrowIfNotExist): Promise<Buffer|undefined> {
+    if (!filePath) {
+      if (params?.dontThrowIfNotExist) {
+        return Promise.resolve(void 0)
+      }
+      return Promise.reject(new Error('File path is empty'))
+    }
     return poolRunWait({
       pool : filePool,
       count: 1,
@@ -78,7 +90,13 @@ export const fileControllerDefault: IFileController = {
     })
   },
 
-  async getStat(filePath: string, params?: DontThrowIfNotExist): Promise<PathStat|undefined> {
+  async getStat(filePath: string|undefined|null, params?: DontThrowIfNotExist): Promise<PathStat|undefined> {
+    if (!filePath) {
+      if (params?.dontThrowIfNotExist) {
+        return Promise.resolve(void 0)
+      }
+      return Promise.reject(new Error('File path is empty'))
+    }
     const stat = await fs.promises.stat(filePath).catch((err) => {
       if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
         return void 0
@@ -93,8 +111,8 @@ export const fileControllerDefault: IFileController = {
     }
   },
 
-  async deletePath(_path: string): Promise<boolean> {
-    if (!await this.existPath(_path)) {
+  async deletePath(_path: string|undefined|null): Promise<boolean> {
+    if (!_path || !await this.existPath(_path)) {
       return false
     }
 
