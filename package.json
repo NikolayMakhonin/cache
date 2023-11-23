@@ -67,7 +67,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "pnpm run audit && pnpm run lint && pnpm run build && pnpm run test:mocha:ci && pnpm run test:karma",
+    "_prepublishOnly": "pnpm run audit && pnpm run lint && pnpm run build && pnpm run test:mocha:ci && pnpm run test:karma",
     "audit": "pnpm audit --prod",
     "lint": "eslint ./**/*.{js,cjs,mjs,ts,tsx}",
     "lint:fix": "eslint --fix ./**/*.{js,cjs,mjs,ts,tsx}",
@@ -92,8 +92,8 @@
     "@babel/runtime-corejs3": "7.21.0",
     "@flemist/copy-glob-flat": "0.0.5",
     "@flemist/karma-custom-launcher": "0.0.0",
-    "@flemist/test-utils": "0.1.4",
-    "@flemist/test-variants": "0.0.16",
+    "@flemist/test-utils": "1.0.2",
+    "@flemist/test-variants": "1.0.2",
     "@rollup/plugin-alias": "4.0.3",
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "=21.1.0",

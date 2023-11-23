@@ -44,11 +44,11 @@ devDependencies:
     specifier: 0.0.0
     version: 0.0.0
   '@flemist/test-utils':
-    specifier: 0.1.4
-    version: 0.1.4(expect@29.5.0)
+    specifier: 1.0.2
+    version: 1.0.2(expect@29.5.0)
   '@flemist/test-variants':
-    specifier: 0.0.16
-    version: 0.0.16
+    specifier: 1.0.2
+    version: 1.0.2
   '@rollup/plugin-alias':
     specifier: 4.0.3
     version: 4.0.3(rollup@2.79.1)
@@ -1386,17 +1386,10 @@ packages:
       - supports-color
     dev: true
 
-  /@flemist/abort-controller-fast@0.0.5:
-    resolution: {integrity: sha512-ewpqfmNx+V5dqTzVBxi7syhhsFRk5ktNOd0d85tKyGkqwzoMyJSYGBPmycYhlUDSsIN/3Nb2EaE0tPOtfw6PNQ==}
-    dependencies:
-      tslib: 2.5.0
-    dev: true
-
   /@flemist/abort-controller-fast@1.0.0:
     resolution: {integrity: sha512-umA3lbp5W025xc410C2zRbYcUkUDIW47s2TreONwzVmuekzmmRmvQ0IEmDO5aYIjU9QDnI4X0NZ+Yh5ELj6raQ==}
     dependencies:
       tslib: 2.5.0
-    dev: false
 
   /@flemist/async-utils@1.0.0:
     resolution: {integrity: sha512-FN1SHf8OIanveOJXFsyDxR4y9TAU8VsvPWkCfxDwo2ru3D3GCu/Pv0hd+D4XbHTq6nedIjVHphUWzFsWtdHnNg==}
@@ -1405,7 +1398,6 @@ packages:
       '@flemist/abort-controller-fast': 1.0.0
       '@flemist/time-controller': 1.0.0
       tslib: 2.5.0
-    dev: false
 
   /@flemist/copy-glob-flat@0.0.5:
     resolution: {integrity: sha512-nw2x3zS78uRv7jlR709oXiMXhtTlTS2+WJiy3aTabcayv50CNHMKXevv9WR7YjUJzS7743EdPJl5wAKjIq9Fdg==}
@@ -1421,19 +1413,11 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@flemist/pairing-heap@0.0.1:
-    resolution: {integrity: sha512-bsXb0bYvrhkibbWAURawIvcR09l5sgRsnFAAwGXr1F1TPZqBL9KMzB0QTlwmokKkd3ci5GqsUUWE1BzK80l6Rg==}
-    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
-    dependencies:
-      tslib: 2.5.0
-    dev: true
-
   /@flemist/pairing-heap@1.0.0:
     resolution: {integrity: sha512-L6ExMxa+J69mLBjjKTIvko0skSFshA/Ms+ZzqX0joGrZc2+rPSLd+x5ByxbSluhGuqct7GPy50Qr9IMlTxEQ6w==}
     engines: {node: '>=10.4.0'}
     dependencies:
       tslib: 2.5.0
-    dev: false
 
   /@flemist/priority-queue@1.0.0:
     resolution: {integrity: sha512-B9gzh3Tcjlz8C/e5bMFLKVVGPa9MX/TC2OTWmMVRMOoIUHXIkOsp6m8zFTt77iCDoL0/d15LpA7SieqwHB/WTw==}
@@ -1444,32 +1428,26 @@ packages:
       '@flemist/pairing-heap': 1.0.0
       '@flemist/time-controller': 1.0.0
       tslib: 2.5.0
-    dev: false
 
-  /@flemist/test-utils@0.1.4(expect@29.5.0):
-    resolution: {integrity: sha512-Ri/38qBs7sK7wh07otQdg9TRtkwlLex1PTgVtx/4PojXhSIoA5o/LJkZj1+eJk3rHlCDb2Wgch2zmvVEGGLU9g==}
-    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+  /@flemist/test-utils@1.0.2(expect@29.5.0):
+    resolution: {integrity: sha512-E+ZdFyQXDEaBsfPX1Wft4xLNy/gyM2rVbjdu65l93W+t80mJ4jZG/xzSSdcOCWg2od2c03CmyOHF93w/FXFGoA==}
+    engines: {node: '>=10.4.0', pnpm: '>=7.1.6'}
     peerDependencies:
       expect: '>=24'
     dependencies:
-      '@flemist/time-controller': 0.0.1
+      '@flemist/async-utils': 1.0.0
+      '@flemist/time-controller': 1.0.0
       expect: 29.5.0
       tslib: 2.5.0
     dev: true
 
-  /@flemist/test-variants@0.0.16:
-    resolution: {integrity: sha512-piqTjaT/w5aTAGZyk9zued4nqvd8EsOLsfORMABy+vIpWgx1hWt0D5Anugum5oTPrZ7zUOi8g7aubH2wDiHQpw==}
-    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
+  /@flemist/test-variants@1.0.2:
+    resolution: {integrity: sha512-IcEiQDdyv6LLi3XfoqdHJZ1AHXbs8EahL1V5f8gMWD+eOxhU8NyhhVZFgj9wG74BxU8xZ4yKm04/Wgp1JKGKYA==}
+    engines: {node: '>=10.4.0', pnpm: '>=7.1.6'}
     dependencies:
-      '@flemist/abort-controller-fast': 0.0.5
-      tslib: 2.5.0
-    dev: true
-
-  /@flemist/time-controller@0.0.1:
-    resolution: {integrity: sha512-z2rddW0+5+fPc+rf3Irq1w1SCzxjYGmv6BrG98nuOXcByK0v+oIsAfslFQudUqJHxZ59fZ6WbzAlgRsLoFDYIw==}
-    engines: {node: '>=10.4.0', pnpm: ^7.1.6}
-    dependencies:
-      '@flemist/pairing-heap': 0.0.1
+      '@flemist/abort-controller-fast': 1.0.0
+      '@flemist/async-utils': 1.0.0
+      '@flemist/time-limits': 1.0.1
       tslib: 2.5.0
     dev: true
 
@@ -1479,7 +1457,6 @@ packages:
     dependencies:
       '@flemist/pairing-heap': 1.0.0
       tslib: 2.5.0
-    dev: false
 
   /@flemist/time-limits@1.0.1:
     resolution: {integrity: sha512-/sOW+hSzJ4PnNiZGWOTlKjWxRsT2Mv6UvjFixc6EO7DnAkv1VRHDXu7dAbTwsV3iUs6dqITqW7+YAXOmLRr6Kg==}
@@ -1490,7 +1467,6 @@ packages:
       '@flemist/priority-queue': 1.0.0
       '@flemist/time-controller': 1.0.0
       tslib: 2.5.0
-    dev: false
 
   /@humanwhocodes/config-array@0.10.7:
     resolution: {integrity: sha512-MDl6D6sBsaV452/QSdX+4CXIjZhIcI0PELsxUjk4U828yd58vk3bTIvk/6w5FY+4hIy9sLW0sfrV7K7Kc++j/w==}
