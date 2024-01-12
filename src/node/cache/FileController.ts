@@ -33,6 +33,8 @@ export type IFileController = {
 
 const filePool = new Pool(Math.min(os.cpus().length, 100))
 
+const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`
+
 export const fileControllerDefault: IFileController = {
   async existPath(_path: string|undefined|null): Promise<boolean> {
     if (!_path) {
@@ -85,7 +87,9 @@ export const fileControllerDefault: IFileController = {
             }
           }
         }
-        await fs.promises.writeFile(filePath, data)
+        await fs.promises.writeFile(filePath + TEMP_EXT, data)
+        await fs.promises.rm(filePath, {force: true})
+        await fs.promises.rename(filePath + TEMP_EXT, filePath)
       },
     })
   },

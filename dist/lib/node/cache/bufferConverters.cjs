@@ -15,7 +15,14 @@ function createBufferConverterString({ encoding = 'utf-8', } = {}) {
 function createBufferConverterJson({ pretty, } = {}) {
     return {
         bufferToValue(buffer) {
-            return JSON.parse(buffer.toString('utf-8'));
+            const str = buffer.toString('utf-8');
+            try {
+                return JSON.parse(str);
+            }
+            catch (err) {
+                console.error('Error parse JSON:\n' + str.substring(0, 50000));
+                throw err;
+            }
         },
         valueToBuffer(value) {
             const str = pretty

@@ -33,6 +33,7 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 var os__namespace = /*#__PURE__*/_interopNamespace(os);
 
 const filePool = new timeLimits.Pool(Math.min(os__namespace.cpus().length, 100));
+const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`;
 const fileControllerDefault = {
     existPath(_path) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -86,7 +87,9 @@ const fileControllerDefault = {
                             }
                         }
                     }
-                    yield fs__default["default"].promises.writeFile(filePath, data);
+                    yield fs__default["default"].promises.writeFile(filePath + TEMP_EXT, data);
+                    yield fs__default["default"].promises.rm(filePath, { force: true });
+                    yield fs__default["default"].promises.rename(filePath + TEMP_EXT, filePath);
                 }),
             });
         });

@@ -5,6 +5,7 @@ import { Pool, poolRunWait } from '@flemist/time-limits';
 import * as os from 'os';
 
 const filePool = new Pool(Math.min(os.cpus().length, 100));
+const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`;
 const fileControllerDefault = {
     existPath(_path) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -58,7 +59,9 @@ const fileControllerDefault = {
                             }
                         }
                     }
-                    yield fs.promises.writeFile(filePath, data);
+                    yield fs.promises.writeFile(filePath + TEMP_EXT, data);
+                    yield fs.promises.rm(filePath, { force: true });
+                    yield fs.promises.rename(filePath + TEMP_EXT, filePath);
                 }),
             });
         });
