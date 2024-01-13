@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
-import {Pool, poolRunWait} from '@flemist/time-limits'
+import {IPool, Pool, poolRunWait, Pools} from '@flemist/time-limits'
 import * as os from 'os'
+import {CustomPromise} from '@flemist/async-utils'
+import {normalizePath} from '@rollup/pluginutils'
 
 export type DontThrowIfNotExist = {
   dontThrowIfNotExist?: boolean
@@ -32,6 +34,48 @@ export type IFileController = {
 }
 
 const filePool = new Pool(Math.min(os.cpus().length, 100))
+
+type FileLock = {
+  pool: IPool
+  count: number
+  path: string
+}
+
+const _lockPathMap = new Map<string, FileLock>()
+async function lockPaths<T>(_paths: string[], func: () => Promise<T>): Promise<T> {
+  const normalizedPaths = Array.from(new Set(_paths.map(normalizePath).filter(o => o)))
+  const locks = normalizedPaths.map(path => {
+    let lock = _lockPathMap.get(path)
+    if (!lock) {
+      lock = {
+        pool : new Pool(1),
+        count: 0,
+        path,
+      }
+      _lockPathMap.set(path, lock)
+    }
+    return lock
+  })
+  locks.forEach(pool => pool.count++)
+  const pools = new Pools(...locks.map(o => o.pool))
+  return poolRunWait({
+    pool : pools,
+    count: 1,
+    async func() {
+      try {
+        return await func()
+      }
+      finally {
+        locks.forEach(pool => pool.count--)
+        locks.forEach(pool => {
+          if (pool.count <= 0) {
+            _lockPathMap.delete(pool.path)
+          }
+        })
+      }
+    },
+  })
+}
 
 const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`
 
