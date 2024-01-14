@@ -129,7 +129,7 @@ describe('toCached', function () {
 
     const results = await Promise.all(
       Array.from({length: COUNT_KEYS})
-        .flatMap((value, key) => Array.from({length: COUNT_CALLS}, () => cashedFunc(key)))
+        .flatMap((_, key) => Array.from({length: COUNT_CALLS}, () => cashedFunc(key))),
     )
 
     for (let i = 0, len = results.length; i < len; i++) {

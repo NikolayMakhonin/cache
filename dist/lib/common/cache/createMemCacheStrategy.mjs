@@ -2,7 +2,7 @@ import { __awaiter } from 'tslib';
 import { isPromiseLike, delay } from '@flemist/async-utils';
 import { timeControllerDefault } from '@flemist/time-controller';
 
-function createMemCacheStrategy({ lifeTime, updateInterval, timeController, }) {
+function createMemCacheStrategy({ lifeTime, updateInterval, timeController, } = {}) {
     if (!timeController) {
         timeController = timeControllerDefault;
     }

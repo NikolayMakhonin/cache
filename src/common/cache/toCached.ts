@@ -29,8 +29,9 @@ export function toCached<
 
     let locker = lockers.get(key)
     if (!locker) {
+      const pool = new Pool(1)
       const lock: Lock = <T>(func) => poolRunWait<T>({
-        pool : new Pool(1),
+        pool,
         count: 1,
         func,
       })

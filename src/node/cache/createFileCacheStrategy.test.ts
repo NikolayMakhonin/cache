@@ -7,6 +7,7 @@ import {createFileCacheStrategy} from './createFileCacheStrategy'
 import {createBufferConverterJson} from './bufferConverters'
 import {getHashKeyFunc} from 'src/node/cache/getHashKeyFunc'
 import {FileControllerMock} from './FileController'
+import fs from 'fs'
 
 describe('toCached', function () {
   this.timeout(300000)
@@ -107,5 +108,47 @@ describe('toCached', function () {
       callTime      : [0, 1, 5],
       lifeTime      : [null],
     })()
+  })
+
+  it('stress', async function () {
+    const values = new Map<number, number>()
+
+    async function func(value: number) {
+      const delayMs = Math.floor(Math.random() * 10)
+      if (delayMs) {
+        await delay(delayMs)
+      }
+      let result = values.get(value)
+      result = result == null ? value * 1000000 : result + 1
+      values.set(value, result)
+      // console.log(`func(${value}) = ${result}`)
+      return result
+    }
+
+    const cashedFunc = toCached(func, {
+      getKey(value) {
+        return value + ''
+      },
+      strategy: createFileCacheStrategy({
+        dir      : cacheDir,
+        converter: createBufferConverterJson({ pretty: true }),
+      }),
+    })
+
+    const COUNT_KEYS = 10
+    const COUNT_CALLS = 1000
+
+    await fs.promises.rm(cacheDir, {recursive: true, force: true}).catch(() => null)
+
+    const results = await Promise.all(
+      Array.from({length: COUNT_KEYS})
+        .flatMap((_, key) => Array.from({length: COUNT_CALLS}, () => cashedFunc(key))),
+    )
+
+    for (let i = 0, len = results.length; i < len; i++) {
+      const checkResult = Math.floor(i / COUNT_CALLS) * 1000000
+      const result = results[i]
+      assert.strictEqual(result, checkResult)
+    }
   })
 })

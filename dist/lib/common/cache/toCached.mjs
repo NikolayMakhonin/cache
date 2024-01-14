@@ -1,5 +1,5 @@
 import { __awaiter } from 'tslib';
-import { poolRunWait, Pool } from '@flemist/time-limits';
+import { Pool, poolRunWait } from '@flemist/time-limits';
 import { isPromiseLike, createValueState } from '@flemist/async-utils';
 
 function toCached(func, { getKey, strategy, }) {
@@ -13,8 +13,9 @@ function toCached(func, { getKey, strategy, }) {
             }
             let locker = lockers.get(key);
             if (!locker) {
+                const pool = new Pool(1);
                 const lock = (func) => poolRunWait({
-                    pool: new Pool(1),
+                    pool,
                     count: 1,
                     func,
                 });

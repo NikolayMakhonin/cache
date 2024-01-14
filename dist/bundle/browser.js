@@ -253,32 +253,32 @@ return t(this,void 0,void 0,(function*(){
 yield e.holdWait(n,i,s,o);const t=new k(n)
 ;return r(t,s)}))}),(()=>{e.release(n)}))()}))}
 return e.createMemCacheStrategy=function(e){
-var r=e.lifeTime,i=e.updateInterval,o=e.timeController
-;o||(o=s);var l=new Map;return function(e,s,u){
-return t(this,void 0,void 0,(function(){var u,c,a
+var r=void 0===e?{}:e,i=r.lifeTime,o=r.updateInterval,l=r.timeController
+;l||(l=s);var u=new Map;return function(e,r,s){
+return t(this,void 0,void 0,(function(){var s,c,a
 ;return n(this,(function(d){switch(d.label){
-case 0:return(u=l.get(s))||(u={value:e(),options:{
-dateCreated:o.now(),dateRequest:o.now()}
-},l.set(s,u),function(){
+case 0:return(s=u.get(r))||(s={value:e(),options:{
+dateCreated:l.now(),dateRequest:l.now()}
+},u.set(r,s),function(){
 t(this,void 0,void 0,(function(){var t,c
 ;return n(this,(function(n){switch(n.label){
-case 0:return f(u.value)?[4,u.value]:[3,2];case 1:
-return c=n.sent(),[3,3];case 2:c=u.value,n.label=3
+case 0:return f(s.value)?[4,s.value]:[3,2];case 1:
+return c=n.sent(),[3,3];case 2:c=s.value,n.label=3
 ;case 3:
-t=c,u.options.dateRequest=o.now(),n.label=4
+t=c,s.options.dateRequest=l.now(),n.label=4
 ;case 4:
-return t.hasValue?i?[4,h(i,null,o)]:[3,7]:(l.delete(s),[3,11])
+return t.hasValue?o?[4,h(o,null,l)]:[3,7]:(u.delete(r),[3,11])
 ;case 5:
-return n.sent(),null!=r&&o.now()-u.options.dateRequest>r?(l.delete(s),[3,11]):[4,e(t)]
+return n.sent(),null!=i&&l.now()-s.options.dateRequest>i?(u.delete(r),[3,11]):[4,e(t)]
 ;case 6:return n.sent(),[3,10];case 7:
-return null==r?[3,9]:[4,h(r,null,o)];case 8:
+return null==i?[3,9]:[4,h(i,null,l)];case 8:
 n.sent(),n.label=9;case 9:
-return l.delete(s),[3,11];case 10:return[3,4]
+return u.delete(r),[3,11];case 10:return[3,4]
 ;case 11:return[2]}}))}))
-}()),f(u.value)?[4,u.value]:[3,2];case 1:
-return a=d.sent(),[3,3];case 2:a=u.value,d.label=3
+}()),f(s.value)?[4,s.value]:[3,2];case 1:
+return a=d.sent(),[3,3];case 2:a=s.value,d.label=3
 ;case 3:
-if(c=a,u.options.dateRequest=o.now(),!c.hasValue)throw c.error||new Error("state.error = ".concat(c.error))
+if(c=a,s.options.dateRequest=l.now(),!c.hasValue)throw c.error||new Error("state.error = ".concat(c.error))
 ;return[2,c.value]}}))}))}
 },e.getJsonKeyFunc=function(e){return function(e){
 return e=function(e,t){
@@ -293,14 +293,14 @@ var i=r.getKey,s=r.strategy,o=new Map
 ;return function(){
 for(var r=[],l=0;l<arguments.length;l++)r[l]=arguments[l]
 ;return t(this,void 0,void 0,(function(){
-var l,u,c,a,h=this;return n(this,(function(d){
-switch(d.label){case 0:
+var l,u,c,a,h,d=this;return n(this,(function(_){
+switch(_.label){case 0:
 return f(l=i.apply(this,r))?[4,l]:[3,2];case 1:
-l=d.sent(),d.label=2;case 2:
-(u=o.get(l))?u.count++:(c=function(e){return E({
-pool:new k(1),count:1,func:e})},u={lock:c,count:1
-},o.set(l,u)),a=function(i){
-return t(h,void 0,void 0,(function(){var t,s
+l=_.sent(),_.label=2;case 2:
+(u=o.get(l))?u.count++:(c=new k(1),a=function(e){
+return E({pool:c,count:1,func:e})},u={lock:a,
+count:1},o.set(l,u)),h=function(i){
+return t(d,void 0,void 0,(function(){var t,s
 ;return n(this,(function(n){switch(n.label){
 case 0:i||(i=function(e={}){return new j(e)
 }()),n.label=1;case 1:
@@ -310,9 +310,9 @@ return i.value=t,i.hasValue=!0,i.hasError=!1,[3,6]
 ;case 4:
 return s=n.sent(),i.error=s,i.hasError=!0,[3,6]
 ;case 5:return i.loading=!1,[7];case 6:return[2,i]
-}}))}))},d.label=3;case 3:
-return d.trys.push([3,,5,6]),[4,s(a,l,u.lock,this,r)]
-;case 4:return[2,d.sent()];case 5:
+}}))}))},_.label=3;case 3:
+return _.trys.push([3,,5,6]),[4,s(h,l,u.lock,this,r)]
+;case 4:return[2,_.sent()];case 5:
 return u.count--,0===u.count&&o.delete(l),[7]
 ;case 6:return[2]}}))}))}
 },Object.defineProperty(e,"__esModule",{value:!0

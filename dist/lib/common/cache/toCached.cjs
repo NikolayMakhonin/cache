@@ -17,8 +17,9 @@ function toCached(func, { getKey, strategy, }) {
             }
             let locker = lockers.get(key);
             if (!locker) {
+                const pool = new timeLimits.Pool(1);
                 const lock = (func) => timeLimits.poolRunWait({
-                    pool: new timeLimits.Pool(1),
+                    pool,
                     count: 1,
                     func,
                 });

@@ -6,7 +6,7 @@ var tslib = require('tslib');
 var asyncUtils = require('@flemist/async-utils');
 var timeController = require('@flemist/time-controller');
 
-function createMemCacheStrategy({ lifeTime, updateInterval, timeController: timeController$1, }) {
+function createMemCacheStrategy({ lifeTime, updateInterval, timeController: timeController$1, } = {}) {
     if (!timeController$1) {
         timeController$1 = timeController.timeControllerDefault;
     }
