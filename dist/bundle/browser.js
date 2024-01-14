@@ -276,7 +276,7 @@ var a=e.dontDeleteNullKeys,h=(s=e.filter,o={},Object.keys(t))
 if(s)if(!s(n?i(i([],r(n),!1),[f],!1):[f],u))continue
 ;u=F(u,e,n),o[f]=u}}return o}
 if(e.convertUnknown)return e.convertUnknown(t)
-;throw new Error("Unknown object type: ".concat(t,", use convertUnknown to convert it"))
+;throw new Error("Unknown object type\npath: [".concat((n||[]).join("]["),"]\nconstructor: ").concat(t,"\nuse convertUnknown option to convert it"))
 }return t.createMemCacheStrategy=function(t){
 var r=void 0===t?{}:t,i=r.lifeTime,s=r.updateInterval,o=r.timeController
 ;o||(o=l);var c=new Map;return function(t,r,l){

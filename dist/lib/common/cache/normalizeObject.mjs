@@ -43,7 +43,7 @@ function normalizeObject(obj, args = {}, _path) {
     if (args.convertUnknown) {
         return args.convertUnknown(obj);
     }
-    throw new Error(`Unknown object type: ${obj}, use convertUnknown to convert it`);
+    throw new Error(`Unknown object type\npath: [${(_path || []).join('][')}]\nconstructor: ${obj}\nuse convertUnknown option to convert it`);
 }
 
 export { normalizeObject };
