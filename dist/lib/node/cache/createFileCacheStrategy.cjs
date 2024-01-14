@@ -9,6 +9,8 @@ var crypto = require('crypto');
 require('fs');
 require('@flemist/time-limits');
 require('os');
+require('@rollup/pluginutils');
+require('./getStackTrace.cjs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 

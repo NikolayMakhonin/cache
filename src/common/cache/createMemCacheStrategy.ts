@@ -19,7 +19,7 @@ export function createMemCacheStrategy<
   lifeTime,
   updateInterval,
   timeController,
-}: MemCacheOptions): CacheStrategy<Key, Result, This, Args> {
+}: MemCacheOptions = {}): CacheStrategy<Key, Result, This, Args> {
   if (!timeController) {
     timeController = timeControllerDefault
   }

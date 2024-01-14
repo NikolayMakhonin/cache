@@ -15,4 +15,6 @@ import '@flemist/time-controller';
 import 'fs';
 import 'path';
 import 'os';
+import '@rollup/pluginutils';
+import './cache/getStackTrace.mjs';
 import 'crypto';

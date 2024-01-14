@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { Pool, poolRunWait } from '@flemist/time-limits';
 import * as os from 'os';
+import '@rollup/pluginutils';
+import { getStackTrace } from './getStackTrace.mjs';
 
 const filePool = new Pool(Math.min(os.cpus().length, 100));
 const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`;
@@ -12,10 +14,12 @@ const fileControllerDefault = {
             if (!_path) {
                 return false;
             }
+            const stack = getStackTrace();
             try {
                 return !!(yield fs.promises.stat(_path));
             }
             catch (err) {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if (err.code === 'ENOENT') {
                     return false;
                 }
@@ -30,10 +34,12 @@ const fileControllerDefault = {
             }
             return Promise.reject(new Error('File path is empty'));
         }
+        const stack = getStackTrace();
         return poolRunWait({
             pool: filePool,
             count: 1,
             func: () => fs.promises.readFile(filePath).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }
@@ -45,6 +51,7 @@ const fileControllerDefault = {
         return __awaiter(this, void 0, void 0, function* () {
             filePath = path.resolve(filePath);
             const dir = path.dirname(filePath);
+            const stack = getStackTrace();
             yield poolRunWait({
                 pool: filePool,
                 count: 1,
@@ -54,14 +61,21 @@ const fileControllerDefault = {
                             yield fs.promises.mkdir(dir, { recursive: true });
                         }
                         catch (err) {
+                            err.stack = err.stack ? err.stack + '\n' + stack : stack;
                             if (err.code !== 'EEXIST') {
                                 throw err;
                             }
                         }
                     }
-                    yield fs.promises.writeFile(filePath + TEMP_EXT, data);
-                    yield fs.promises.rm(filePath, { force: true });
-                    yield fs.promises.rename(filePath + TEMP_EXT, filePath);
+                    try {
+                        yield fs.promises.writeFile(filePath + TEMP_EXT, data);
+                        yield fs.promises.rm(filePath, { force: true });
+                        yield fs.promises.rename(filePath + TEMP_EXT, filePath);
+                    }
+                    catch (err) {
+                        err.stack = err.stack ? err.stack + '\n' + stack : stack;
+                        throw err;
+                    }
                 }),
             });
         });
@@ -74,7 +88,9 @@ const fileControllerDefault = {
                 }
                 return Promise.reject(new Error('File path is empty'));
             }
+            const stack = getStackTrace();
             const stat = yield fs.promises.stat(filePath).catch((err) => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }
@@ -93,7 +109,9 @@ const fileControllerDefault = {
             if (!_path || !(yield this.existPath(_path))) {
                 return false;
             }
+            const stack = getStackTrace();
             yield fs.promises.rm(_path, { recursive: true, force: true }).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if (err.code === 'ENOENT') {
                     return null;
                 }
@@ -103,10 +121,12 @@ const fileControllerDefault = {
         });
     },
     readDir(dirPath, params) {
+        const stack = getStackTrace();
         return poolRunWait({
             pool: filePool,
             count: 1,
             func: () => fs.promises.readdir(dirPath).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }

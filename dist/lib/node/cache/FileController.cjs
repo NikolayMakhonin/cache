@@ -7,6 +7,8 @@ var fs = require('fs');
 var path = require('path');
 var timeLimits = require('@flemist/time-limits');
 var os = require('os');
+require('@rollup/pluginutils');
+var node_cache_getStackTrace = require('./getStackTrace.cjs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -40,10 +42,12 @@ const fileControllerDefault = {
             if (!_path) {
                 return false;
             }
+            const stack = node_cache_getStackTrace.getStackTrace();
             try {
                 return !!(yield fs__default["default"].promises.stat(_path));
             }
             catch (err) {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if (err.code === 'ENOENT') {
                     return false;
                 }
@@ -58,10 +62,12 @@ const fileControllerDefault = {
             }
             return Promise.reject(new Error('File path is empty'));
         }
+        const stack = node_cache_getStackTrace.getStackTrace();
         return timeLimits.poolRunWait({
             pool: filePool,
             count: 1,
             func: () => fs__default["default"].promises.readFile(filePath).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }
@@ -73,6 +79,7 @@ const fileControllerDefault = {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             filePath = path__default["default"].resolve(filePath);
             const dir = path__default["default"].dirname(filePath);
+            const stack = node_cache_getStackTrace.getStackTrace();
             yield timeLimits.poolRunWait({
                 pool: filePool,
                 count: 1,
@@ -82,14 +89,21 @@ const fileControllerDefault = {
                             yield fs__default["default"].promises.mkdir(dir, { recursive: true });
                         }
                         catch (err) {
+                            err.stack = err.stack ? err.stack + '\n' + stack : stack;
                             if (err.code !== 'EEXIST') {
                                 throw err;
                             }
                         }
                     }
-                    yield fs__default["default"].promises.writeFile(filePath + TEMP_EXT, data);
-                    yield fs__default["default"].promises.rm(filePath, { force: true });
-                    yield fs__default["default"].promises.rename(filePath + TEMP_EXT, filePath);
+                    try {
+                        yield fs__default["default"].promises.writeFile(filePath + TEMP_EXT, data);
+                        yield fs__default["default"].promises.rm(filePath, { force: true });
+                        yield fs__default["default"].promises.rename(filePath + TEMP_EXT, filePath);
+                    }
+                    catch (err) {
+                        err.stack = err.stack ? err.stack + '\n' + stack : stack;
+                        throw err;
+                    }
                 }),
             });
         });
@@ -102,7 +116,9 @@ const fileControllerDefault = {
                 }
                 return Promise.reject(new Error('File path is empty'));
             }
+            const stack = node_cache_getStackTrace.getStackTrace();
             const stat = yield fs__default["default"].promises.stat(filePath).catch((err) => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }
@@ -121,7 +137,9 @@ const fileControllerDefault = {
             if (!_path || !(yield this.existPath(_path))) {
                 return false;
             }
+            const stack = node_cache_getStackTrace.getStackTrace();
             yield fs__default["default"].promises.rm(_path, { recursive: true, force: true }).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if (err.code === 'ENOENT') {
                     return null;
                 }
@@ -131,10 +149,12 @@ const fileControllerDefault = {
         });
     },
     readDir(dirPath, params) {
+        const stack = node_cache_getStackTrace.getStackTrace();
         return timeLimits.poolRunWait({
             pool: filePool,
             count: 1,
             func: () => fs__default["default"].promises.readdir(dirPath).catch(err => {
+                err.stack = err.stack ? err.stack + '\n' + stack : stack;
                 if ((params === null || params === void 0 ? void 0 : params.dontThrowIfNotExist) && err.code === 'ENOENT') {
                     return void 0;
                 }

@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import {IPool, Pool, poolRunWait, Pools} from '@flemist/time-limits'
 import * as os from 'os'
-import {CustomPromise} from '@flemist/async-utils'
 import {normalizePath} from '@rollup/pluginutils'
+import {getStackTrace} from 'src/node/cache/getStackTrace'
 
 export type DontThrowIfNotExist = {
   dontThrowIfNotExist?: boolean
@@ -84,10 +84,12 @@ export const fileControllerDefault: IFileController = {
     if (!_path) {
       return false
     }
+    const stack = getStackTrace()
     try {
       return !!await fs.promises.stat(_path)
     }
     catch (err) {
+      err.stack = err.stack ? err.stack + '\n' + stack : stack
       if (err.code === 'ENOENT') {
         return false
       }
@@ -102,10 +104,12 @@ export const fileControllerDefault: IFileController = {
       }
       return Promise.reject(new Error('File path is empty'))
     }
+    const stack = getStackTrace()
     return poolRunWait({
       pool : filePool,
       count: 1,
       func : () => fs.promises.readFile(filePath).catch(err => {
+        err.stack = err.stack ? err.stack + '\n' + stack : stack
         if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
           return void 0
         }
@@ -117,6 +121,7 @@ export const fileControllerDefault: IFileController = {
   async writeFile(filePath: string, data: Buffer) {
     filePath = path.resolve(filePath)
     const dir = path.dirname(filePath)
+    const stack = getStackTrace()
     await poolRunWait({
       pool : filePool,
       count: 1,
@@ -126,14 +131,21 @@ export const fileControllerDefault: IFileController = {
             await fs.promises.mkdir(dir, {recursive: true})
           }
           catch (err) {
+            err.stack = err.stack ? err.stack + '\n' + stack : stack
             if (err.code !== 'EEXIST') {
               throw err
             }
           }
         }
-        await fs.promises.writeFile(filePath + TEMP_EXT, data)
-        await fs.promises.rm(filePath, {force: true})
-        await fs.promises.rename(filePath + TEMP_EXT, filePath)
+        try {
+          await fs.promises.writeFile(filePath + TEMP_EXT, data)
+          await fs.promises.rm(filePath, {force: true})
+          await fs.promises.rename(filePath + TEMP_EXT, filePath)
+        }
+        catch (err) {
+          err.stack = err.stack ? err.stack + '\n' + stack : stack
+          throw err
+        }
       },
     })
   },
@@ -145,7 +157,9 @@ export const fileControllerDefault: IFileController = {
       }
       return Promise.reject(new Error('File path is empty'))
     }
+    const stack = getStackTrace()
     const stat = await fs.promises.stat(filePath).catch((err) => {
+      err.stack = err.stack ? err.stack + '\n' + stack : stack
       if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
         return void 0
       }
@@ -164,7 +178,9 @@ export const fileControllerDefault: IFileController = {
       return false
     }
 
+    const stack = getStackTrace()
     await fs.promises.rm(_path, {recursive: true, force: true}).catch(err => {
+      err.stack = err.stack ? err.stack + '\n' + stack : stack
       if (err.code === 'ENOENT') {
         return null
       }
@@ -175,10 +191,12 @@ export const fileControllerDefault: IFileController = {
   },
 
   readDir(dirPath: string, params?: DontThrowIfNotExist): Promise<string[] | undefined> {
+    const stack = getStackTrace()
     return poolRunWait({
       pool : filePool,
       count: 1,
       func : () => fs.promises.readdir(dirPath).catch(err => {
+        err.stack = err.stack ? err.stack + '\n' + stack : stack
         if (params?.dontThrowIfNotExist && err.code === 'ENOENT') {
           return void 0
         }

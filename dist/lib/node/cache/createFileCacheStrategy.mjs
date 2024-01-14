@@ -5,6 +5,8 @@ import crypto from 'crypto';
 import 'fs';
 import '@flemist/time-limits';
 import 'os';
+import '@rollup/pluginutils';
+import './getStackTrace.mjs';
 
 // function hashToPathOld(hash: string) {
 //   return hash.substring(0, 2)

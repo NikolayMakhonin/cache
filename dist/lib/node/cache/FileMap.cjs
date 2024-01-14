@@ -13,6 +13,8 @@ var node_cache_readDirRecursive = require('./readDirRecursive.cjs');
 var node_cache_deleteEmptyDirs = require('./deleteEmptyDirs.cjs');
 require('fs');
 require('os');
+require('@rollup/pluginutils');
+require('./getStackTrace.cjs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 

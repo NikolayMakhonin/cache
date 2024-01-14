@@ -19,6 +19,8 @@ require('@flemist/time-controller');
 require('fs');
 require('path');
 require('os');
+require('@rollup/pluginutils');
+require('./cache/getStackTrace.cjs');
 require('crypto');
 
 

@@ -9,6 +9,8 @@ import { readDirRecursive } from './readDirRecursive.mjs';
 import { deleteEmptyDirs } from './deleteEmptyDirs.mjs';
 import 'fs';
 import 'os';
+import '@rollup/pluginutils';
+import './getStackTrace.mjs';
 
 function checkExist({ fileController, filePath, hashFilePath, deleteIfCorrupted, }) {
     return __awaiter(this, void 0, void 0, function* () {
