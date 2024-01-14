@@ -1,1 +1,2 @@
-export declare function getJsonKeyFunc(params?: {}): <T>(obj: T) => string;
+import { NormalizeObjectArgs } from "./normalizeObject";
+export declare function getJsonKeyFunc(params?: NormalizeObjectArgs): <T>(obj: T) => string;

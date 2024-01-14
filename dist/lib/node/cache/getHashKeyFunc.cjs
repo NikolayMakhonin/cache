@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var crypto = require('crypto');
 var common_cache_getJsonKeyFunc = require('../../common/cache/getJsonKeyFunc.cjs');
+require('../../common/cache/normalizeObject.cjs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 

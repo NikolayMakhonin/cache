@@ -1,32 +1,11 @@
-function normalizeObject<T>(obj: T, {
-  sortKeys = true,
-  deep = true,
-}: {
-  sortKeys?: boolean
-  deep?: boolean
-} = {}): T {
-  if (!obj || typeof obj !== 'object') {
-    return obj
-  }
+import {
+  normalizeObject,
+  NormalizeObjectArgs,
+} from 'src/common/cache/normalizeObject'
 
-  const keys = Object.keys(obj)
-
-  if (sortKeys) {
-    keys.sort()
-  }
-
-  return keys.reduce((a, key) => {
-    const value: any = obj[key]
-    if (value != null && value !== '') {
-      a[key] = value
-    }
-    return a
-  }, {} as T)
-}
-
-export function getJsonKeyFunc(params: {} = {}) {
+export function getJsonKeyFunc(params: NormalizeObjectArgs = {}) {
   return function getJsonKey<T>(obj: T) {
-    obj = normalizeObject(obj)
+    obj = normalizeObject(obj, params)
     return JSON.stringify(obj ?? null)
   }
 }

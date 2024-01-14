@@ -2,25 +2,11 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function normalizeObject(obj, { sortKeys = true, deep = true, } = {}) {
-    if (!obj || typeof obj !== 'object') {
-        return obj;
-    }
-    const keys = Object.keys(obj);
-    if (sortKeys) {
-        keys.sort();
-    }
-    return keys.reduce((a, key) => {
-        const value = obj[key];
-        if (value != null && value !== '') {
-            a[key] = value;
-        }
-        return a;
-    }, {});
-}
+var common_cache_normalizeObject = require('./normalizeObject.cjs');
+
 function getJsonKeyFunc(params = {}) {
     return function getJsonKey(obj) {
-        obj = normalizeObject(obj);
+        obj = common_cache_normalizeObject.normalizeObject(obj, params);
         return JSON.stringify(obj !== null && obj !== void 0 ? obj : null);
     };
 }
