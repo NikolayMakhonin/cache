@@ -10,8 +10,9 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 
 var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
 
-function getHashKeyFunc(algorithm = 'sha256') {
-    const getJsonKey = common_cache_getJsonKeyFunc.getJsonKeyFunc();
+function getHashKeyFunc(args = {}) {
+    const getJsonKey = common_cache_getJsonKeyFunc.getJsonKeyFunc(args);
+    const algorithm = args.algorithm || 'sha256';
     return function getHashKey(obj) {
         const json = getJsonKey(obj);
         return crypto__default["default"].createHash(algorithm).update(json).digest('base64url');

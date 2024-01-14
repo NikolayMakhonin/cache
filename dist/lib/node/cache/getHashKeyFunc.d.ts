@@ -1,1 +1,4 @@
-export declare function getHashKeyFunc(algorithm?: string): (obj?: any) => string;
+import { NormalizeObjectArgs } from "../../common";
+export declare function getHashKeyFunc(args?: {
+    algorithm?: string;
+} & NormalizeObjectArgs): (obj?: any) => string;
