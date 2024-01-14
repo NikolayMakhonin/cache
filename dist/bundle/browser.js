@@ -270,11 +270,11 @@ void 0===e&&(e={});var s=e.custom
 ;if(null==t||"object"!=typeof t)return t
 ;if(Array.isArray(t)){
 for(var o=[],l=0,c=t.length;l<c;l++){
-(h=C(h=t[l],e,s?n?i(i([],r(n),!1),[l+""],!1):[l+""]:n))!==F&&o.push(h)
+(h=C(h=t[l],e,n?i(i([],r(n),!1),[l+""],!1):[l+""]))!==F&&o.push(h)
 }return o}if(t.constructor===Object){
 var u=e.dontDeleteNullKeys,a=(o={},Object.keys(t))
 ;a.sort();for(l=0,c=a.length;l<c;l++){var h,f=a[l]
-;h=C(h=t[f],e,s?n?i(i([],r(n),!1),[f],!1):[f]:n),
+;h=C(h=t[f],e,n?i(i([],r(n),!1),[f],!1):[f]),
 (u||null!=h)&&(h!==F&&(o[f]=h))}return o}
 throw new Error("Unknown object type\npath: [".concat((n||M).join("]["),"]\nconstructor: ").concat(t.constructor.name,"\nuse the 'custom' option to convert or filter it"))
 }

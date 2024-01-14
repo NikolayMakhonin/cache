@@ -26,9 +26,7 @@ function _normalizeObject(obj, args = {}, _path) {
         const result = [];
         for (let i = 0, len = obj.length; i < len; i++) {
             let value = obj[i];
-            const __path = custom
-                ? (_path ? [..._path, i + ''] : [i + ''])
-                : _path;
+            const __path = _path ? [..._path, i + ''] : [i + ''];
             value = _normalizeObject(value, args, __path);
             if (value === DELETE) {
                 continue;
@@ -45,9 +43,7 @@ function _normalizeObject(obj, args = {}, _path) {
         for (let i = 0, len = keys.length; i < len; i++) {
             const key = keys[i];
             let value = obj[key];
-            const __path = custom
-                ? (_path ? [..._path, key] : [key])
-                : _path;
+            const __path = _path ? [..._path, key] : [key];
             value = _normalizeObject(value, args, __path);
             if (!dontDeleteNullKeys && value == null) {
                 continue;
