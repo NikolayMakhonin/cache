@@ -29,6 +29,7 @@ require('crypto');
 exports.toCached = common_cache_toCached.toCached;
 exports.getJsonKeyFunc = common_cache_getJsonKeyFunc.getJsonKeyFunc;
 exports.createMemCacheStrategy = common_cache_createMemCacheStrategy.createMemCacheStrategy;
+exports.DELETE = common_cache_normalizeObject.DELETE;
 exports.normalizeObject = common_cache_normalizeObject.normalizeObject;
 exports.createBufferConverterJson = node_cache_bufferConverters.createBufferConverterJson;
 exports.createBufferConverterString = node_cache_bufferConverters.createBufferConverterString;

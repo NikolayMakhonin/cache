@@ -109,10 +109,10 @@ for(;p.length>0;){yield 0;const t=p
 console.error("Unhandled promise rejection",t)}}))
 }_=null}))}())}function b(t,e,n){y((()=>{try{
 const r=e?e(t):t;n._resolve(r)}catch(t){
-n._reject(t)}}))}function w(t,e,n){y((()=>{
+n._reject(t)}}))}function m(t,e,n){y((()=>{
 if(e)try{const r=e(t);n._resolve(r)}catch(t){
 n._reject(t)}else n._reject(t)}))}
-const m=function(){};class g{constructor(t){
+const w=function(){};class g{constructor(t){
 this.status="pending",this.value=void 0,
 this.reason=void 0,this._handlers=null
 ;const e=this._resolve,n=this._reject,r=this._resolveAsync,i=this._rejectAsync,s=this
@@ -134,17 +134,17 @@ this.status="rejected",v(t)?t.then(this._rejectAsync,this._rejectAsync):this._re
 }_rejectSync(t){const e=this._handlers
 ;if(this.reason=t,null!=e){this._handlers=null
 ;for(let n=0,r=e.length;n<r;n++){const[,r,i]=e[n]
-;w(t,r,i)}}}then(t,e){const n=new g(m)
+;m(t,r,i)}}}then(t,e){const n=new g(w)
 ;return"pending"===this.status?(null==this._handlers&&(this._handlers=[]),
-this._handlers.push([t,e,n])):"fulfilled"===this.status?b(this.value,t,n):w(this.reason,e,n),
+this._handlers.push([t,e,n])):"fulfilled"===this.status?b(this.value,t,n):m(this.reason,e,n),
 n}catch(t){return this.then(void 0,t)}finally(t){
 const e=t&&function(e){const n=t()
 ;return v(n)?n.then((()=>e)):g.resolve(e)
 },n=t&&function(e){const n=t()
 ;return v(n)?n.then((()=>g.reject(e))):g.reject(e)
 };return this.then(e,n)}static resolve(t){
-const e=new g(m);return e._resolve(t),e}
-static reject(t){const e=new g(m)
+const e=new g(w);return e._resolve(t),e}
+static reject(t){const e=new g(w)
 ;return e._reject(t),e}get[Symbol.toStringTag](){
 return"Promise"}static get[Symbol.species](){
 return g}static all(t){return function(t,e){
@@ -183,24 +183,24 @@ this.promise.then((()=>{this._status="resolved"
 return this._status}}class S{constructor(t={}){
 this.value=t.value,this.loading=t.loading||!1,
 this.hasValue=t.hasValue||!1,this.error=t.error,
-this.hasError=t.hasError||!1}}class P{
+this.hasError=t.hasError||!1}}class z{
 constructor(t,e){
 this._branch=null,this.order=t,this.parent=e}
 get branch(){if(!this._branch){
 const t=[this.order];let e=this.parent
 ;for(;null!=e;)t.push(e.order),e=e.parent
 ;this._branch=t}return this._branch}}
-function z(t,e){return function(t,e){
+function P(t,e){return function(t,e){
 const n=t&&t.branch,r=e&&e.branch,i=n?n.length:0,s=r?r.length:0,o=i>s?i:s
 ;for(let t=0;t<o;t++){
 const e=t>=i?0:n[i-1-t],o=t>=s?0:r[s-1-t]
 ;if(e!==o)return e>o?1:-1}return 0
-}(t.priority,e.priority)<0}let T=1;class k{
-constructor(){this._queue=new u({lessThanFunc:z})}
+}(t.priority,e.priority)<0}let T=1;class E{
+constructor(){this._queue=new u({lessThanFunc:P})}
 run(t,e,n){return this._run(!1,t,e,n)}
 runTask(t,e,n){return this._run(!0,t,e,n)}
 _run(t,e,n,r){const i=new x(r),s={
-priority:(o=T++,l=n,null==o?null==l?null:l:new P(o,l)),
+priority:(o=T++,l=n,null==o?null==l?null:l:new z(o,l)),
 func:e,abortSignal:r,resolve:i.resolve,
 reject:i.reject,readyToRun:!t};var o,l
 ;if(this._queue.add(s),t){const t=this;return{
@@ -219,13 +219,13 @@ e=n.item,t.delete(n)}
 if(e.abortSignal&&e.abortSignal.aborted)e.reject(e.abortSignal.reason);else try{
 let t=e.func&&e.func(e.abortSignal)
 ;t&&"function"==typeof t.then&&(t=yield t),e.resolve(t)
-}catch(t){e.reject(t)}}}))}}const E=function(){
-const t=new k;return function(e,n){
+}catch(t){e.reject(t)}}}))}}const k=function(){
+const t=new E;return function(e,n){
 return t.run(void 0,e,n)}}();class A{
 constructor(t){
 if(this._maxSize=0,this._size=0,this._tickPromise=new x,!t)throw new Error("maxSize should be > 0")
 ;this._maxSize=t,
-this._size=t,this._priorityQueue=new k}
+this._size=t,this._priorityQueue=new E}
 get maxSize(){return this._maxSize}get size(){
 return this._size}get holdAvailable(){
 return this._size}hold(t){const e=this._size
@@ -246,7 +246,7 @@ e.then((function(t){r&&r(),n(t)
 })).catch(s),t&&(r=t.subscribe(s))})):e
 }(t,this._tickPromise.promise)}holdWait(t,n,r,i){
 if(t>this.maxSize)throw new Error(`holdCount (${t} > maxSize (${this.maxSize}))`)
-;return i||(i=E),
+;return i||(i=k),
 this._priorityQueue.run((r=>e(this,void 0,void 0,(function*(){
 for(;t>this._size;)yield this.tick(r),yield i(n,r)
 ;if(!this.hold(t))throw new Error("Unexpected behavior")
@@ -262,22 +262,23 @@ return e?t.then((t=>(e(),t)),(t=>{throw e(),t})):t
 return e(this,void 0,void 0,(function*(){
 yield t.holdWait(n,i,s,o);const e=new A(n)
 ;return r(e,s)}))}),(()=>{t.release(n)}))()}))}
-function F(t,e,n){
-if(void 0===e&&(e={}),null==t||"object"!=typeof t)return t
+var F=Symbol("DELETE"),M=Object.freeze([])
+;function q(t,e){void 0===e&&(e={});var n=C(t,e)
+;if(n!==F)return n}function C(t,e,n){
+void 0===e&&(e={});var s=e.custom
+;if(s&&(t=s(n||M,t)),t===F)return t
+;if(null==t||"object"!=typeof t)return t
 ;if(Array.isArray(t)){
-for(var s=e.filter,o=[],l=0,c=t.length;l<c;l++){
-var u=t[l]
-;if(s)if(!s(n?i(i([],r(n),!1),[l+""],!1):[l+""],u))continue
-;u=F(u,e,n),o.push(u)}return o}
-if(t.constructor===Object){
-var a=e.dontDeleteNullKeys,h=(s=e.filter,o={},Object.keys(t))
-;h.sort();for(l=0,c=h.length;l<c;l++){var f=h[l]
-;u=t[f];if(a||null!=u){
-if(s)if(!s(n?i(i([],r(n),!1),[f],!1):[f],u))continue
-;u=F(u,e,n),o[f]=u}}return o}
-if(e.convertUnknown)return e.convertUnknown(t)
-;throw new Error("Unknown object type\npath: [".concat((n||[]).join("]["),"]\nconstructor: ").concat(t,"\nuse convertUnknown option to convert it"))
-}return t.createMemCacheStrategy=function(t){
+for(var o=[],l=0,c=t.length;l<c;l++){
+(h=C(h=t[l],e,s?n?i(i([],r(n),!1),[l+""],!1):[l+""]:n))!==F&&o.push(h)
+}return o}if(t.constructor===Object){
+var u=e.dontDeleteNullKeys,a=(o={},Object.keys(t))
+;a.sort();for(l=0,c=a.length;l<c;l++){var h,f=a[l]
+;h=C(h=t[f],e,s?n?i(i([],r(n),!1),[f],!1):[f]:n),
+(u||null!=h)&&(h!==F&&(o[f]=h))}return o}
+throw new Error("Unknown object type\npath: [".concat((n||M).join("]["),"]\nconstructor: ").concat(t.constructor.name,"\nuse the 'custom' option to convert or filter it"))
+}
+return t.DELETE=F,t.createMemCacheStrategy=function(t){
 var r=void 0===t?{}:t,i=r.lifeTime,s=r.updateInterval,o=r.timeController
 ;o||(o=l);var c=new Map;return function(t,r,l){
 return e(this,void 0,void 0,(function(){var l,u,a
@@ -307,8 +308,8 @@ if(u=a,l.options.dateRequest=o.now(),!u.hasValue)throw u.error||new Error("state
 ;return[2,u.value]}}))}))}
 },t.getJsonKeyFunc=function(t){
 return void 0===t&&(t={}),function(e){
-return e=F(e,t),JSON.stringify(null!=e?e:null)}
-},t.normalizeObject=F,t.toCached=function(t,r){
+return e=q(e,t),JSON.stringify(null!=e?e:null)}
+},t.normalizeObject=q,t.toCached=function(t,r){
 var i=r.getKey,s=r.strategy,o=new Map
 ;return function(){
 for(var r=[],l=0;l<arguments.length;l++)r[l]=arguments[l]

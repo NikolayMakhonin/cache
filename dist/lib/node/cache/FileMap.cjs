@@ -6,6 +6,7 @@ var tslib = require('tslib');
 var path = require('path');
 require('@flemist/time-limits');
 require('@flemist/async-utils');
+require('../../common/cache/normalizeObject.cjs');
 require('@flemist/time-controller');
 var node_cache_FileController = require('./FileController.cjs');
 var crypto = require('crypto');

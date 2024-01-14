@@ -1,7 +1,7 @@
 export { toCached } from '../common/cache/toCached.mjs';
 export { getJsonKeyFunc } from '../common/cache/getJsonKeyFunc.mjs';
 export { createMemCacheStrategy } from '../common/cache/createMemCacheStrategy.mjs';
-export { normalizeObject } from '../common/cache/normalizeObject.mjs';
+export { DELETE, normalizeObject } from '../common/cache/normalizeObject.mjs';
 export { createBufferConverterJson, createBufferConverterString } from './cache/bufferConverters.mjs';
 export { FileControllerMock, fileControllerDefault } from './cache/FileController.mjs';
 export { createFileCacheStrategy } from './cache/createFileCacheStrategy.mjs';

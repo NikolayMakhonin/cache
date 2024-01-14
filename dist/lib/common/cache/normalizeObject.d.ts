@@ -1,6 +1,7 @@
+export declare const DELETE: unique symbol;
 export declare type NormalizeObjectArgs = {
-    filter?: (_path: string[], value: any) => boolean;
-    convertUnknown?: (value: any) => any;
+    /** return DELETE to delete value */
+    custom?: (_path: readonly string[], value: any) => any;
     dontDeleteNullKeys?: boolean;
 };
-export declare function normalizeObject<T>(obj: T, args?: NormalizeObjectArgs, _path?: string[]): T;
+export declare function normalizeObject<T>(obj: T, args?: NormalizeObjectArgs): T;

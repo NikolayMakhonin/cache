@@ -2,6 +2,7 @@ import { __awaiter } from 'tslib';
 import path from 'path';
 import '@flemist/time-limits';
 import '@flemist/async-utils';
+import '../../common/cache/normalizeObject.mjs';
 import '@flemist/time-controller';
 import { fileControllerDefault } from './FileController.mjs';
 import crypto from 'crypto';
