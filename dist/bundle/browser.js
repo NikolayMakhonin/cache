@@ -269,11 +269,12 @@ for(var s=e.filter,o=[],l=0,c=t.length;l<c;l++){
 var u=t[l]
 ;if(s)if(!s(n?i(i([],r(n),!1),[l+""],!1):[l+""],u))continue
 ;u=F(u,e,n),o.push(u)}return o}
-if(t.constructor===Object){s=e.filter,o={}
-;var a=Object.keys(t);a.sort()
-;for(l=0,c=a.length;l<c;l++){var h=a[l];u=t[h]
-;if(s)if(!s(n?i(i([],r(n),!1),[h],!1):[h],u))continue
-;u=F(u,e,n),o[h]=u}return o}
+if(t.constructor===Object){
+var a=e.dontDeleteNullKeys,h=(s=e.filter,o={},Object.keys(t))
+;h.sort();for(l=0,c=h.length;l<c;l++){var f=h[l]
+;u=t[f];if(a||null!=u){
+if(s)if(!s(n?i(i([],r(n),!1),[f],!1):[f],u))continue
+;u=F(u,e,n),o[f]=u}}return o}
 if(e.convertUnknown)return e.convertUnknown(t)
 ;throw new Error("Unknown object type: ".concat(t,", use convertUnknown to convert it"))
 }return t.createMemCacheStrategy=function(t){

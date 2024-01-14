@@ -19,13 +19,16 @@ function normalizeObject(obj, args = {}, _path) {
         return result;
     }
     if (obj.constructor === Object) {
-        const { filter } = args;
+        const { dontDeleteNullKeys, filter } = args;
         const result = {};
         const keys = Object.keys(obj);
         keys.sort();
         for (let i = 0, len = keys.length; i < len; i++) {
             const key = keys[i];
             let value = obj[key];
+            if (!dontDeleteNullKeys && value == null) {
+                continue;
+            }
             if (filter) {
                 const __path = _path ? [..._path, key] : [key];
                 if (!filter(__path, value)) {
