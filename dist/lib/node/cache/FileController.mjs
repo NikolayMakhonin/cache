@@ -1,12 +1,51 @@
 import { __awaiter } from 'tslib';
 import fs from 'fs';
 import path from 'path';
-import { Pool, poolRunWait } from '@flemist/time-limits';
+import { Pool, Pools, poolRunWait } from '@flemist/time-limits';
 import * as os from 'os';
-import '@rollup/pluginutils';
+import { normalizePath } from '@rollup/pluginutils';
 import { getStackTrace } from './getStackTrace.mjs';
 
 const filePool = new Pool(Math.min(os.cpus().length, 100));
+const _lockPathMap = new Map();
+function lockPaths(_paths, func) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const normalizedPaths = Array.from(new Set(_paths.map(normalizePath).filter(o => o)));
+        const locks = normalizedPaths.map(path => {
+            let lock = _lockPathMap.get(path);
+            if (!lock) {
+                lock = {
+                    pool: new Pool(1),
+                    count: 0,
+                    path,
+                };
+                _lockPathMap.set(path, lock);
+            }
+            return lock;
+        });
+        locks.forEach(pool => pool.count++);
+        const pools = new Pools(...locks.map(o => o.pool));
+        return poolRunWait({
+            pool: pools,
+            count: 1,
+            func() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        return yield func();
+                    }
+                    finally {
+                        locks.forEach(pool => pool.count--);
+                        locks.forEach(pool => {
+                            if (pool.count <= 0) {
+                                _lockPathMap.delete(pool.path);
+                            }
+                        });
+                    }
+                });
+            },
+        });
+    });
+}
 const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`;
 const fileControllerDefault = {
     existPath(_path) {
@@ -197,4 +236,4 @@ class FileControllerMock {
     }
 }
 
-export { FileControllerMock, fileControllerDefault };
+export { FileControllerMock, fileControllerDefault, lockPaths };

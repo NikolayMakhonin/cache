@@ -22,6 +22,7 @@ export declare type IFileController = {
     deletePath: DeletePath;
     readDir: ReadDir;
 };
+export declare function lockPaths<T>(_paths: string[], func: () => Promise<T>): Promise<T>;
 export declare const fileControllerDefault: IFileController;
 export declare class FileControllerMock implements IFileController {
     private readonly _files;

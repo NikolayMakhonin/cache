@@ -35,6 +35,7 @@ exports.createBufferConverterJson = node_cache_bufferConverters.createBufferConv
 exports.createBufferConverterString = node_cache_bufferConverters.createBufferConverterString;
 exports.FileControllerMock = node_cache_FileController.FileControllerMock;
 exports.fileControllerDefault = node_cache_FileController.fileControllerDefault;
+exports.lockPaths = node_cache_FileController.lockPaths;
 exports.createFileCacheStrategy = node_cache_createFileCacheStrategy.createFileCacheStrategy;
 exports.getHashKeyFunc = node_cache_getHashKeyFunc.getHashKeyFunc;
 exports.readDirRecursive = node_cache_readDirRecursive.readDirRecursive;

@@ -43,7 +43,6 @@ type FileLock = {
 
 const _lockPathMap = new Map<string, FileLock>()
 export async function lockPaths<T>(_paths: string[], func: () => Promise<T>): Promise<T> {
-  return func()
   const normalizedPaths = Array.from(new Set(_paths.map(normalizePath).filter(o => o)))
   const locks = normalizedPaths.map(path => {
     let lock = _lockPathMap.get(path)

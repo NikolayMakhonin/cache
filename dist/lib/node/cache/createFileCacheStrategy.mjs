@@ -1,6 +1,6 @@
 import { __awaiter } from 'tslib';
 import path from 'path';
-import { fileControllerDefault } from './FileController.mjs';
+import { lockPaths, fileControllerDefault } from './FileController.mjs';
 import crypto from 'crypto';
 import 'fs';
 import '@flemist/time-limits';
@@ -56,39 +56,41 @@ function createFileCacheStrategy({ dir, converter, filterArgs, filterResult, fil
                             state = cacheItem.value;
                             if (state.hasValue) {
                                 const valueFilePath = path.resolve(dir, hashToPath(cacheItem.options.hash));
-                                // const valueFilePathOld = path.resolve(dir, hashToPathOld(cacheItem.options.hash))
-                                // if (await fileController.existPath(valueFilePathOld)) {
-                                //   const dir = path.dirname(valueFilePath)
-                                //   if (!await fs.promises.stat(dir).catch(() => null)) {
-                                //     await fs.promises.mkdir(dir, {recursive: true})
-                                //   }
-                                //   await fs.promises.rename(valueFilePathOld, valueFilePath)
-                                // }
-                                const valueFileStat = yield fileController.getStat(valueFilePath).catch(() => null);
-                                if (!valueFileStat) {
-                                    console.warn('Value file not found: ' + valueFilePath);
-                                    cacheItem = null;
-                                    state = null;
-                                }
-                                else {
-                                    const valueBuffer = yield fileController.readFile(valueFilePath);
-                                    const _checkHash = checkHash && crypto.createHash('sha256').update(valueBuffer).digest('base64url');
-                                    if (checkHash && _checkHash !== cacheItem.options.hash) {
-                                        console.warn('Incorrect hash for: ' + key);
-                                        yield fileController.deletePath(valueFilePath);
+                                yield lockPaths([valueFilePath], () => __awaiter(this, void 0, void 0, function* () {
+                                    // const valueFilePathOld = path.resolve(dir, hashToPathOld(cacheItem.options.hash))
+                                    // if (await fileController.existPath(valueFilePathOld)) {
+                                    //   const dir = path.dirname(valueFilePath)
+                                    //   if (!await fs.promises.stat(dir).catch(() => null)) {
+                                    //     await fs.promises.mkdir(dir, {recursive: true})
+                                    //   }
+                                    //   await fs.promises.rename(valueFilePathOld, valueFilePath)
+                                    // }
+                                    const valueFileStat = yield fileController.getStat(valueFilePath).catch(() => null);
+                                    if (!valueFileStat) {
+                                        console.warn('Value file not found: ' + valueFilePath);
                                         cacheItem = null;
                                         state = null;
                                     }
                                     else {
-                                        state.value = yield converter.bufferToValue(valueBuffer);
-                                        if (isExpired && (yield isExpired.call(_this, state, args, valueFileStat))) {
-                                            console.log('Expired cacheItem for: ' + key);
+                                        const valueBuffer = yield fileController.readFile(valueFilePath);
+                                        const _checkHash = checkHash && crypto.createHash('sha256').update(valueBuffer).digest('base64url');
+                                        if (checkHash && _checkHash !== cacheItem.options.hash) {
+                                            console.warn('Incorrect hash for: ' + key);
                                             yield fileController.deletePath(valueFilePath);
                                             cacheItem = null;
                                             state = null;
                                         }
+                                        else {
+                                            state.value = yield converter.bufferToValue(valueBuffer);
+                                            if (isExpired && (yield isExpired.call(_this, state, args, valueFileStat))) {
+                                                console.log('Expired cacheItem for: ' + key);
+                                                yield fileController.deletePath(valueFilePath);
+                                                cacheItem = null;
+                                                state = null;
+                                            }
+                                        }
                                     }
-                                }
+                                }));
                             }
                             else if (isExpired && (yield isExpired.call(_this, state, args, cacheItemFileStat))) {
                                 console.log('Expired cacheItem for: ' + key);
@@ -114,7 +116,7 @@ function createFileCacheStrategy({ dir, converter, filterArgs, filterResult, fil
                             const cacheItemBuffer = cacheItemStr && Buffer.from(cacheItemStr, 'utf-8');
                             yield Promise.all([
                                 cacheItemBuffer && fileController.writeFile(cacheItemFilePath, cacheItemBuffer),
-                                valueBuffer && fileController.writeFile(valueFilePath, valueBuffer),
+                                valueBuffer && lockPaths([valueFilePath], () => fileController.writeFile(valueFilePath, valueBuffer)),
                             ]);
                         }
                     }

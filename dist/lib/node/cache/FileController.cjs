@@ -7,7 +7,7 @@ var fs = require('fs');
 var path = require('path');
 var timeLimits = require('@flemist/time-limits');
 var os = require('os');
-require('@rollup/pluginutils');
+var pluginutils = require('@rollup/pluginutils');
 var node_cache_getStackTrace = require('./getStackTrace.cjs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -35,6 +35,45 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 var os__namespace = /*#__PURE__*/_interopNamespace(os);
 
 const filePool = new timeLimits.Pool(Math.min(os__namespace.cpus().length, 100));
+const _lockPathMap = new Map();
+function lockPaths(_paths, func) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const normalizedPaths = Array.from(new Set(_paths.map(pluginutils.normalizePath).filter(o => o)));
+        const locks = normalizedPaths.map(path => {
+            let lock = _lockPathMap.get(path);
+            if (!lock) {
+                lock = {
+                    pool: new timeLimits.Pool(1),
+                    count: 0,
+                    path,
+                };
+                _lockPathMap.set(path, lock);
+            }
+            return lock;
+        });
+        locks.forEach(pool => pool.count++);
+        const pools = new timeLimits.Pools(...locks.map(o => o.pool));
+        return timeLimits.poolRunWait({
+            pool: pools,
+            count: 1,
+            func() {
+                return tslib.__awaiter(this, void 0, void 0, function* () {
+                    try {
+                        return yield func();
+                    }
+                    finally {
+                        locks.forEach(pool => pool.count--);
+                        locks.forEach(pool => {
+                            if (pool.count <= 0) {
+                                _lockPathMap.delete(pool.path);
+                            }
+                        });
+                    }
+                });
+            },
+        });
+    });
+}
 const TEMP_EXT = `.${Math.random().toString(36).slice(2)}.tmp`;
 const fileControllerDefault = {
     existPath(_path) {
@@ -227,3 +266,4 @@ class FileControllerMock {
 
 exports.FileControllerMock = FileControllerMock;
 exports.fileControllerDefault = fileControllerDefault;
+exports.lockPaths = lockPaths;

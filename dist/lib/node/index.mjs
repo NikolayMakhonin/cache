@@ -3,7 +3,7 @@ export { getJsonKeyFunc } from '../common/cache/getJsonKeyFunc.mjs';
 export { createMemCacheStrategy } from '../common/cache/createMemCacheStrategy.mjs';
 export { DELETE, normalizeObject } from '../common/cache/normalizeObject.mjs';
 export { createBufferConverterJson, createBufferConverterString } from './cache/bufferConverters.mjs';
-export { FileControllerMock, fileControllerDefault } from './cache/FileController.mjs';
+export { FileControllerMock, fileControllerDefault, lockPaths } from './cache/FileController.mjs';
 export { createFileCacheStrategy } from './cache/createFileCacheStrategy.mjs';
 export { getHashKeyFunc } from './cache/getHashKeyFunc.mjs';
 export { readDirRecursive } from './cache/readDirRecursive.mjs';
