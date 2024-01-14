@@ -111,17 +111,36 @@ describe('toCached', function () {
   })
 
   it('stress', async function () {
-    const values = new Map<number, number>()
+    const COUNT_KEYS = 10
+    const COUNT_CALLS = 1000
 
-    async function func(value: number) {
-      const delayMs = Math.floor(Math.random() * 10)
-      if (delayMs) {
-        await delay(delayMs)
+    const values = new Map<number, number>()
+    const locks = new Set<number>()
+
+    function func(key: number) {
+      if (locks.has(key)) {
+        throw new Error(`lock is not working ${key}`)
       }
-      let result = values.get(value)
-      result = result == null ? value * 1000000 : result + 1
-      values.set(value, result)
+
+      locks.add(key)
+      let result = values.get(key)
+      if (result == null) {
+        result = key * 2 < COUNT_CALLS ? (key % 3) * 1000000 : key * 1000000
+      }
+      else {
+        result++
+      }
+      values.set(key, result)
+
+      if (key * 4 < COUNT_CALLS) {
+        return delay(COUNT_CALLS - result).then(() => {
+          locks.delete(key)
+          return result
+        })
+      }
+
       // console.log(`func(${value}) = ${result}`)
+      locks.delete(key)
       return result
     }
 
@@ -135,9 +154,6 @@ describe('toCached', function () {
       }),
     })
 
-    const COUNT_KEYS = 10
-    const COUNT_CALLS = 1000
-
     await fs.promises.rm(cacheDir, {recursive: true, force: true}).catch(() => null)
 
     const results = await Promise.all(
@@ -146,7 +162,8 @@ describe('toCached', function () {
     )
 
     for (let i = 0, len = results.length; i < len; i++) {
-      const checkResult = Math.floor(i / COUNT_CALLS) * 1000000
+      const key = Math.floor(i / COUNT_CALLS)
+      const checkResult = key * 2 < COUNT_CALLS ? (key % 3) * 1000000 : key * 1000000
       const result = results[i]
       assert.strictEqual(result, checkResult)
     }

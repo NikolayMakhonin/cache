@@ -1,7 +1,12 @@
 import type {BufferConverter} from './contracts'
 import type {IValueState, PromiseOrValue} from '@flemist/async-utils'
 import path from 'path'
-import {fileControllerDefault, PathStat, IFileController} from './FileController'
+import {
+  fileControllerDefault,
+  PathStat,
+  IFileController,
+  lockPaths,
+} from './FileController'
 import crypto from 'crypto'
 import {CacheItem, CacheStrategy, Lock} from 'src/common/cache/contracts'
 
@@ -94,40 +99,42 @@ export function createFileCacheStrategy<
             state = cacheItem.value
             if (state.hasValue) {
               const valueFilePath = path.resolve(dir, hashToPath(cacheItem.options.hash))
-              // const valueFilePathOld = path.resolve(dir, hashToPathOld(cacheItem.options.hash))
-              // if (await fileController.existPath(valueFilePathOld)) {
-              //   const dir = path.dirname(valueFilePath)
-              //   if (!await fs.promises.stat(dir).catch(() => null)) {
-              //     await fs.promises.mkdir(dir, {recursive: true})
-              //   }
-              //   await fs.promises.rename(valueFilePathOld, valueFilePath)
-              // }
-              const valueFileStat = await fileController.getStat(valueFilePath).catch(() => null)
-              if (!valueFileStat) {
-                console.warn('Value file not found: ' + valueFilePath)
-                cacheItem = null
-                state = null
-              }
-              else {
-                const valueBuffer = await fileController.readFile(valueFilePath)
-
-                const _checkHash = checkHash && crypto.createHash('sha256').update(valueBuffer).digest('base64url')
-                if (checkHash && _checkHash !== cacheItem.options.hash) {
-                  console.warn('Incorrect hash for: ' + key)
-                  await fileController.deletePath(valueFilePath)
+              await lockPaths([valueFilePath], async () => {
+                // const valueFilePathOld = path.resolve(dir, hashToPathOld(cacheItem.options.hash))
+                // if (await fileController.existPath(valueFilePathOld)) {
+                //   const dir = path.dirname(valueFilePath)
+                //   if (!await fs.promises.stat(dir).catch(() => null)) {
+                //     await fs.promises.mkdir(dir, {recursive: true})
+                //   }
+                //   await fs.promises.rename(valueFilePathOld, valueFilePath)
+                // }
+                const valueFileStat = await fileController.getStat(valueFilePath).catch(() => null)
+                if (!valueFileStat) {
+                  console.warn('Value file not found: ' + valueFilePath)
                   cacheItem = null
                   state = null
                 }
                 else {
-                  state.value = await converter.bufferToValue(valueBuffer)
-                  if (isExpired && await isExpired.call(_this, state, args, valueFileStat)) {
-                    console.log('Expired cacheItem for: ' + key)
+                  const valueBuffer = await fileController.readFile(valueFilePath)
+
+                  const _checkHash = checkHash && crypto.createHash('sha256').update(valueBuffer).digest('base64url')
+                  if (checkHash && _checkHash !== cacheItem.options.hash) {
+                    console.warn('Incorrect hash for: ' + key)
                     await fileController.deletePath(valueFilePath)
                     cacheItem = null
                     state = null
                   }
+                  else {
+                    state.value = await converter.bufferToValue(valueBuffer)
+                    if (isExpired && await isExpired.call(_this, state, args, valueFileStat)) {
+                      console.log('Expired cacheItem for: ' + key)
+                      await fileController.deletePath(valueFilePath)
+                      cacheItem = null
+                      state = null
+                    }
+                  }
                 }
-              }
+              })
             }
             else if (isExpired && await isExpired.call(_this, state, args, cacheItemFileStat)) {
               console.log('Expired cacheItem for: ' + key)
@@ -156,7 +163,7 @@ export function createFileCacheStrategy<
             const cacheItemBuffer = cacheItemStr && Buffer.from(cacheItemStr, 'utf-8')
             await Promise.all([
               cacheItemBuffer && fileController.writeFile(cacheItemFilePath, cacheItemBuffer),
-              valueBuffer && fileController.writeFile(valueFilePath, valueBuffer),
+              valueBuffer && lockPaths([valueFilePath], () => fileController.writeFile(valueFilePath, valueBuffer)),
             ])
           }
         }

@@ -104,17 +104,29 @@ describe('toCached', function () {
   })
 
   it('stress', async function () {
-    const values = new Map<number, number>()
+    const COUNT_KEYS = 10
+    const COUNT_CALLS = 1000
 
-    async function func(value: number) {
-      const delayMs = Math.floor(Math.random() * 10)
-      if (delayMs) {
-        await delay(delayMs)
+    const values = new Map<number, number>()
+    const locks = new Set<number>()
+
+    function func(value: number) {
+      if (locks.has(value)) {
+        throw new Error(`lock is not working ${value}`)
       }
+      locks.add(value)
       let result = values.get(value)
       result = result == null ? value * 1000000 : result + 1
       values.set(value, result)
-      return result
+      if (result < COUNT_CALLS / 2) {
+        return delay(COUNT_CALLS - result).then(() => {
+          locks.delete(value)
+          return result
+        })
+      }
+      // console.log(`func(${value}) = ${result}`)
+      locks.delete(value)
+      return (result - value * 1000000) % 3 + value * 1000000
     }
 
     const cashedFunc = toCached(func, {
@@ -123,9 +135,6 @@ describe('toCached', function () {
       },
       strategy: createMemCacheStrategy({}),
     })
-
-    const COUNT_KEYS = 100
-    const COUNT_CALLS = 1000
 
     const results = await Promise.all(
       Array.from({length: COUNT_KEYS})
